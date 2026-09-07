@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "aseprite-agent": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/absolute/path/to/aseprite-agent-mcp",
+        "run",
+        "--no-sync",
+        "aseprite-agent-mcp"
+      ],
+      "env": {
+        "ASEPRITE_PATH": "/absolute/path/to/aseprite",
+        "ASEPRITE_MCP_WORKSPACE": "/absolute/path/to/assets"
+      }
+    }
+  }
+}

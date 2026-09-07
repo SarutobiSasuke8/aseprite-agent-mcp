@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+dist/
+build/
+
+# uv
+.uv/
+
+# Aseprite MCP workspace (generated sprites) â€” keep the folder, ignore contents
+/workspace/*
+!/workspace/.gitkeep
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+node_modules/
+.pytest_cache/
+.hypothesis/
+
+# Local operating context — intentionally not part of the public package/repository
+AGENTS.md
+BUILD_PLAN.md

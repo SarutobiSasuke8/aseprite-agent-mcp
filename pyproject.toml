@@ -1,0 +1,46 @@
+[project]
+name = "aseprite-agent-mcp"
+version = "0.1.0"
+description = "An extensive Model Context Protocol (MCP) server for driving Aseprite (pixel-art editor) headlessly via Lua scripting and the Aseprite CLI."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "Aseprite Agent MCP contributors" }]
+keywords = ["aseprite", "mcp", "pixel-art", "sprite", "model-context-protocol", "animation"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Topic :: Multimedia :: Graphics :: Editors",
+    "Topic :: Software Development :: Libraries",
+]
+dependencies = [
+    "mcp[cli]>=1.4.0,<2",
+    "pillow>=12.2.0",
+]
+
+[project.scripts]
+aseprite-agent-mcp = "aseprite_mcp.agent_server:main"
+
+[dependency-groups]
+dev = ["pytest>=8.0", "hypothesis>=6"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/aseprite_mcp"]
+
+
+[tool.hatch.build.targets.sdist]
+include = ["src", "tests", "scripts", "docs", "README.md", "ROADMAP.md", "SECURITY.md", "CHANGELOG.md", "LICENSE", "NOTICE", "UPSTREAM_INVENTORY.json", "pyproject.toml", "uv.lock", "mcp-config.example.json", "examples/phaser/index.html", "examples/phaser/package.json", "examples/phaser/package-lock.json"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"LICENSE" = "aseprite_mcp/notices/LICENSE"
+"NOTICE" = "aseprite_mcp/notices/NOTICE"
+"UPSTREAM_INVENTORY.json" = "aseprite_mcp/notices/UPSTREAM_INVENTORY.json"

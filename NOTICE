@@ -1,0 +1,7 @@
+Aseprite Agent MCP contains code derived from MalloyTheDev/aseprite-mcp,
+commit 8caabf9ce240a040ca2c94d3d7366c9d8dd63653.
+Copyright (c) 2026 Brendan Malloy. Used under the MIT License (see LICENSE).
+UPSTREAM_INVENTORY.json records every imported source/test file and its original hash.
+Local modifications and additions are described in CHANGELOG.md.
+No source from logiksecurity/ase-mcp has been incorporated.
+Aseprite itself is a separately installed runtime and is not distributed here.

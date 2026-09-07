@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>Aseprite Agent MCP — Phaser proof</title>
+<style>body{background:#17212b;color:#e0efff;font:16px system-ui;margin:32px}canvas{image-rendering:pixelated}p{max-width:720px}</style>
+<h1>Aseprite → Phaser proof</h1><p id="status">Loading the verified atlas…</p><div id="game"></div>
+<p>Four tagged sequences, four phases each. Synthetic pipeline fixture; this is not finished character animation.</p>
+<script src="node_modules/phaser/dist/phaser.js"></script>
+<script type="module">
+import {preloadAsset,createAnimations} from '../../workspace/proof-final/phaser/loader.js';
+const evidence={loaded:false,animations:[],updates:0,seen:{}};
+window.proof=evidence;
+new Phaser.Game({type:Phaser.CANVAS,width:640,height:240,parent:'game',pixelArt:true,backgroundColor:'#17212b',audio:{noAudio:true},
+scene:{preload(){preloadAsset(this,'../../workspace/proof-final/phaser');this.load.on('loaderror',f=>{document.querySelector('#status').textContent='FAIL: '+f.url})},
+create(){createAnimations(this);for(const [i,d] of ['down','left','right','up'].entries()){
+ const a=this.anims.get('robot:'+d);if(!a||a.frames.length!==4)throw Error('Invalid animation '+d);
+ evidence.animations.push({key:d,frames:a.frames.length}); evidence.seen[d]=[];
+ const s=this.add.sprite(80+i*160,110,'robot').setScale(7).play('robot:'+d);
+ s.on('animationupdate',(_,f)=>{if(!evidence.seen[d].includes(f.textureFrame))evidence.seen[d].push(f.textureFrame); evidence.updates++;document.querySelector('#status').textContent=Object.values(evidence.seen).every(x=>x.length===4)?'PASS — atlas loaded; all 16 frames played across four animations.':'Playing…';});
+ this.add.text(55+i*160,195,d,{fontSize:'18px'});
+}evidence.loaded=true;}}});
+</script></html>

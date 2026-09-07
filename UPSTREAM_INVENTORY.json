@@ -1,0 +1,451 @@
+{
+  "upstream": "https://github.com/MalloyTheDev/aseprite-mcp",
+  "commit": "8caabf9ce240a040ca2c94d3d7366c9d8dd63653",
+  "imported_at": "2026-09-07",
+  "files": [
+    {
+      "path": "src/aseprite_mcp/__init__.py",
+      "sha256": "2b7f267d68f78780d14c405f35bccaccc640b77c244ffded97b116dce2078459",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/app.py",
+      "sha256": "b6bcf7a6e3091c90ad5504d7fdb05806fcbd03631420945b0e0c0ab709e7027f",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/config.py",
+      "sha256": "3efb9a2b19de50ec415f71b6a73ecd6ea7fed0361bcd2d2466747f9f1f708117",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/errors.py",
+      "sha256": "0dfebabd678059acbdb91520109411e46cb7cfdd3db8a2e4ed090e0fda596e2d",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/luagen.py",
+      "sha256": "5ca72878956a9f36ea74f3cec6ddcee85c83e272c7624586bccd5c71642a8b0d",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/runner.py",
+      "sha256": "f7a02e048950061d3b6463fe198b095d65c8cfa1361f73d20c6c8f7e0e00f23a",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/server.py",
+      "sha256": "519cb487a910b92221130035d4120028a518224b65e7bc6d6987b1c81c0f65f4",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/core/__init__.py",
+      "sha256": "411d40c99cc852a67306a31fac8df4b20741f5a3c1dc2a5167ebc61a0befc3a6",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/core/asset_spec.py",
+      "sha256": "307aca125ed80cfd1d732cec0006f0ed003bb4f70772850a20d48e9e2a9bfafb",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/core/config.py",
+      "sha256": "2eee0c252752d7688fd222bcb533fb8cdde63a36bab95360d4a5e9cc983d2a1e",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/core/errors.py",
+      "sha256": "05f5b6282900234628d4b2934e4f1403a2755bfd436381983a4fad00bb29cdd6",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/core/limits.py",
+      "sha256": "fa93e8077cd63f7ee8d4705a06e3368e8f6fd2e055530c8c7686bc92137f87ad",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/core/luagen.py",
+      "sha256": "010b32700854f4c6bacca9dbb58e3e39e6420df2c523045c6f94fbef6092c789",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/core/manifest.py",
+      "sha256": "12b707175e0e7ee49e15f09ea99476afc428c5415016a62a2291e3136e9749fd",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/core/models.py",
+      "sha256": "5150045aa26557d097d160adf8d14137475e258ea29313f330a918da41c31eac",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/core/oplib.py",
+      "sha256": "5a63244d58fa858f1b1ab58b910356748041dba798d8fb1662622cd61e0a28e6",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/core/paths.py",
+      "sha256": "adbcbb095c7e4fc645acd64ca0752ea43549b7476b2f8eccb56ce3e294d75c58",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/core/runner.py",
+      "sha256": "5df52b22037153de79d0e84b8c02cf37497afdb069ad2fd701f2817879493090",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/core/slice_metadata.py",
+      "sha256": "95b3561ce67e6c74060d83411f63177e850702d422e802c1c3af29bf01b32792",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/core/validation.py",
+      "sha256": "b8fa34234473645a0002441913396cb425672794041d5c7d97964866b867be96",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/core/engines/__init__.py",
+      "sha256": "01eaae0058b4b764a4fed0f3e70de19027504c0ffa9ac187a9d32e5a3ea91e6a",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/core/engines/godot.py",
+      "sha256": "4906696df263cb9470f512d0455cc23c210f79a09a237f53e9cc39fca5c3ad93",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/__init__.py",
+      "sha256": "7f5592dcfa532182bf9620af26f35ddffc88ba2b292e3fc9fdfea083b8a51d8a",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/asset_spec.py",
+      "sha256": "998fa330e04f633df8be0d90987e77485d25a50913cce41d956ddf76a117cbb9",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/batch.py",
+      "sha256": "3012dc054546dd80ea24bbe51e975004597da3308914e1cb5060876f2f6943aa",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/brushes.py",
+      "sha256": "e5bd4611d8efdbf21e2313e1c09df152523311bc1a496be0e261497b809f3a3c",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/cels.py",
+      "sha256": "5d24c90ad0b42695bc00a0307aa80f9c878f928bce49ee19e15a784d095616c6",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/common.py",
+      "sha256": "ee2a9a4c50c17b93261c2dc7e8550529eb7d827e56722bc237926d910eafa0d2",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/drawing.py",
+      "sha256": "83f80864194fca32b20bd0b97c837ae423558541a7ba06762a29afb0b53a56b6",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/effects.py",
+      "sha256": "2d132f108237b0b12e413bde81fbc26c4f643b3dc47bf1285b3ab7f0cd479de2",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/export_presets.py",
+      "sha256": "795a693e92bb7f8b54c50cabd6ad44ce056ae9c4b527e22f6a2a5e0e1bd9718a",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/export.py",
+      "sha256": "c9801dcc15cbc26d685e31f48ca5742bf55f408d885c5a37fc17edbdf9dd99fe",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/frames.py",
+      "sha256": "a568bca5d162bea32afdef155c6b5716477330a8e7e8735c28a963a3112dbabb",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/gui.py",
+      "sha256": "45e7a82b5743c0f79e0bb127596cc6b9a9fe6e8f2732cd6c1e525bc2738d9fce",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/health.py",
+      "sha256": "479573f4c11910de3fae9010b932f9938a82743560c520686b930f17381e4e3a",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/image.py",
+      "sha256": "3db923867724bd35201de1f345eb98f0243b1f8226e62edb42076dc54b47a908",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/inspect.py",
+      "sha256": "ea5f57432e0aef226de10daf5230545c2cb4086ee3ced7881d14d430266826ab",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/layers.py",
+      "sha256": "7ee25e461622c974659bbe64b5750629813e9a539c75d941a1eb8f41fa129f1e",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/palette.py",
+      "sha256": "c1feb5e34b2fc582ec0a73287fdd3e13cab5853fc061072c4204f7b9f631cd59",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/reference.py",
+      "sha256": "9dff19731b66a94846ca920dffa07755150b6a3a2046f286b15549a3a2060be7",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/slices.py",
+      "sha256": "0445b761b96119ddf958971e56f31e4795a37dd92c002a833dd8d772a7a5feaa",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/sprite.py",
+      "sha256": "f794ea91b18fb7af5a346eeea9dd67527f784abf5f65b4f1f9955d2596650a56",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/tags.py",
+      "sha256": "9fe641574893cd1820d4eb90ebc8fd9f1970da85b326d2efab385b8ec41096c6",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/text.py",
+      "sha256": "f375f49fc0bb47f0aa64e313aa029dda2a56d0df6152a461f1cde0ffca29a5c8",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/tilemap.py",
+      "sha256": "8720c80f05d6afbd92e3c51b09a9ecc61908ba3903a67cfed586835970a05768",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/transform.py",
+      "sha256": "fb326428cb8e3c13919faf88b683f69979eacb6be1943bb8ccea493b712b3d46",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "src/aseprite_mcp/tools/workflow.py",
+      "sha256": "fd92bf83f4a649faf1e3b79e96b7ef241aa1afbb6c1f45e3beae44aa42498bbd",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/conftest.py",
+      "sha256": "dd06d0e7b382b6b17d8e299f424ff73cd890ea89121af81ac4ac5048d4368c2f",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_advanced.py",
+      "sha256": "02dd0482599cc87f38840f20ab95cb6ab44e5e365964be6398f16d69f09b4bfc",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_asset_spec.py",
+      "sha256": "b9179392c36c8d9816db7f9e8bde7867b2a4bd11bda18e0dc3dea507edfd7c66",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_batch.py",
+      "sha256": "e501262c7d33c01d4434993009b3c5ae425e025b8aabc0c08908b01dd99f05b7",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_build_asset.py",
+      "sha256": "577d54ec2dbe2e5573807aa000e2a33ccc5459609b827626749a8e51b60ad9ee",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_engine_godot.py",
+      "sha256": "d1bdacc40379fcd48626839c15e6bf5944710df6d48354bb28ef42ea21d0b429",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_errors.py",
+      "sha256": "8c83acc31d572a970424ce6241101cdb664badbba1b60f8b6a1eff0801dcd294",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_expansion.py",
+      "sha256": "83153ae4988ccee3b919bf6c45e286f225510a0d534b62309cda3a878da87b4e",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_export_presets.py",
+      "sha256": "32eac6d4c615b79f953945fa4bd7dc04de7910578115e041c1a6f7bbcc9df8cf",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_export_slice_metadata.py",
+      "sha256": "1e14236e974dda64bd6e72d3a9ad03a166f5958de6eb63f425b3b91fd154adec",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_golden.py",
+      "sha256": "ff645c0de63b8d0fb6e2685b147d42a5506af14aae05cb136015fa024d96c343",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_gui.py",
+      "sha256": "e04d45d21ccf8ea7f53c260002227a0553e3fe1a4a4d1dc433f7170166a93215",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_health.py",
+      "sha256": "0b4e7ebbc9350b912aaabd8e301673f0fd650fd2233bba336ebf1a351958e0c7",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_imports.py",
+      "sha256": "ab37afd0dc11dd72cea7cd1979ab85898cd62ebad7dbbfc9af85847cae753d5a",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_limits.py",
+      "sha256": "d9364add939bf360d9bf4a9c49bc0b64fdbc50a6ee2b89f0a017f946a385e1fc",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_manifest.py",
+      "sha256": "073bf9e2775072598545d9402eca0643723ec8385a2d9197a83b3a4a8b82cd94",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_models.py",
+      "sha256": "75f2ff17aac6b07394c617ecdfe078096422c2035c82b1ae95c927e5328e361c",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_oplib.py",
+      "sha256": "7c751714c765af525a07ea8d06e6ce2e900d9b2f0fb8f00a0aafe6c4683207b9",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_output_paths.py",
+      "sha256": "f89d5d430603a13a535c29b051273644403ede596aa5345854b49eca54069ebe",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_overwrite.py",
+      "sha256": "98190e97d8626ee41451ffe6d38db4a8c4b53645336bae297430829e5b064bcb",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_properties.py",
+      "sha256": "25aa0ac3aec24d06b5f61fe0211b353bf6c62acb78d39fd738b3e1e85b592de5",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_regressions.py",
+      "sha256": "154ea91bd030bc50d4b3b783d1719f1af99d69785abdb3ac9e7e0a11b227cd9c",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_slice_metadata.py",
+      "sha256": "f0499d1ff424cf496269e5dec3bf9e3de13cd3ec6cd21143df45a0d339b96793",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_tools.py",
+      "sha256": "829c40912b62fe40a091b7fcc5c616cbf66a20d422e3ed2a833598575fde344f",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_unit.py",
+      "sha256": "b9b6b0fb4d42ac778cedbf5e45501ccb948f1572ee74ee1a4222c78d1cfa245e",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_validation.py",
+      "sha256": "314162c6b86aaedf51e9ed75e9fa35c5fe01fb2f6d5c423527d4e3457d073da2",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    },
+    {
+      "path": "tests/test_workflows.py",
+      "sha256": "390da9911a2eb7c7ee898fbc1086036e478134ca13f56d44f65c114498372d39",
+      "license": "MIT",
+      "copyright": "2026 Brendan Malloy"
+    }
+  ]
+}
