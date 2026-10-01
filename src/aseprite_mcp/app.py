@@ -7,6 +7,8 @@ without creating an import cycle with `server.py`.
 from __future__ import annotations
 
 from mcp.server.fastmcp import FastMCP
+from .core import config
+from .core.workspace_lock import workspace_lock
 
 INSTRUCTIONS = """\
 This server drives Aseprite (a pixel-art / sprite editor) headlessly to create and
@@ -27,4 +29,12 @@ Workflow notes:
   * Recommended first step for a new asset: `create_sprite`, then draw, then preview.
 """
 
-mcp = FastMCP("aseprite-agent", instructions=INSTRUCTIONS)
+class WorkspaceMCP(FastMCP):
+    async def call_tool(self, name, arguments):
+        # Cover the entire workflow, including reads, edits, preview and export.
+        # Non-blocking acquisition avoids stalling this event loop on contention.
+        with workspace_lock(config.workspace()):
+            return await super().call_tool(name, arguments)
+
+
+mcp = WorkspaceMCP("aseprite-agent", instructions=INSTRUCTIONS)

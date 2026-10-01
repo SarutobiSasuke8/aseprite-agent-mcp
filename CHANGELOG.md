@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased - 2026-10-01
+
+- Hold a fail-fast OS workspace lock around every complete MCP tool call; reserve
+  its path and release ownership on completion, cancellation and process exit.
+- Publish verified Phaser bundles with one no-overwrite directory rename, so
+  process termination cannot expose a partially published bundle. Unsupported
+  exclusive-rename semantics fail closed; power-loss durability remains unproven.
+- Add process contention, termination, write/rename failure, destination race,
+  master-change, cancellation and preview-allocation regressions.
+- Reject oversized contact sheets before allocation, exercise lock contention and
+  recovery over MCP stdio, and add macOS to the unit/package CI matrix.
+- Correct inherited beta package metadata to alpha. No release or promotion.
+
 ## 0.1.0 â€” local, unreleased â€” 2026-09-07
 
 - Imported 74 source/test files from the MIT upstream; exact original hashes and

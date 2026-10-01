@@ -1,4 +1,40 @@
-# Local verification — 2026-09-07
+# Verification
+
+## Readiness sweep - 2026-10-01
+
+The candidate remains a private, unreleased alpha. On Windows, all **270 tests
+passed** with `pytest --run-aseprite`; no integration tests were skipped. This
+includes 17 new file-safety regressions exercising OS locks, competing writers,
+process termination, MCP cancellation, reserved lock paths, write/rename failure,
+destination races, changed-master rejection and preview limits before allocation.
+
+Fresh `scripts/proof_stdio.py` runs passed both from the editable checkout and
+from a wheel installed into a new virtual environment. Both used the local
+self-built Aseprite `1.x-dev`, discovered 109 tools, created 16 distinct frames,
+reopened the native master and verified every exported RGBA cell. Both passed
+rollback, traversal, overwrite and damaged-contract checks. New cross-process
+MCP contention checks returned a tool error while locked and succeeded in the
+same stdio session after release. The fresh wheel resolved MCP 1.30.0 within the
+declared range; the locked checkout uses MCP 1.29.1.
+
+The fresh contact sheet was visually inspected. The Phaser 3.90.0 fixture,
+pointed at this run using `?proof=readiness-proof-2026-10-01`, reported that all
+16 frames played across four animations. The fixture now accepts a constrained
+proof-directory name, so a new run can be played without replacing old evidence.
+
+Local receipts are ignored under `workspace/readiness-proof-2026-10-01/` and
+`workspace/wheel-proof-2026-10-01/`. Both wheel and source archives passed the
+distribution boundary and licence checks. The unit/package CI matrix now covers
+Windows, Linux and macOS; it deliberately does not claim real-editor coverage.
+
+Termination tests prove absent-or-complete final-directory visibility around
+publication and lock release after interpreter termination. They do not simulate
+power loss or qualify network filesystems. The lock coordinates MCP calls using
+the same workspace, not the GUI or direct Python calls. An orphaned Aseprite
+process must finish before retrying after an unexpected server exit. Artist
+review, real-game proof and broader inherited-tool limits remain open.
+
+## Local verification - 2026-09-07
 
 Runtime: self-built Aseprite reporting `1.x-dev`; Python 3.11.15, MCP 1.29.1,
 Pillow 12.3.0. This confirms local capability, not commercial-licence entitlement

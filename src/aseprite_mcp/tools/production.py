@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import io
 import json
-import os
 import tempfile
 from pathlib import Path
 from PIL import Image
@@ -11,6 +10,7 @@ from mcp.server.fastmcp import Image as MCPImage
 from ..app import mcp
 from ..core import config
 from ..core.runner import run_lua
+from ..core.publication import publish_directory
 from ..core.contract import AssetContract, validate_frames, rgba_hash
 from .batch import apply_operations
 from .inspect import render_preview
@@ -66,9 +66,10 @@ def ase_preview_animation(filename: str, scale: int = 4) -> list:
         raise ValueError("scale must be 1..8")
     info, frames = read_master(filename)
     cols = min(8, len(frames))
-    sheet = Image.new("RGBA", (info["width"] * cols, info["height"] * ((len(frames)+cols-1)//cols)))
-    if sheet.width * sheet.height * scale * scale > 16_777_216:
+    size = (info["width"] * cols, info["height"] * ((len(frames)+cols-1)//cols))
+    if size[0] * size[1] * scale * scale > 16_777_216:
         raise ValueError("Preview exceeds 16 million pixels; reduce scale")
+    sheet = Image.new("RGBA", size)
     for i, im in enumerate(frames):
         sheet.paste(im, ((i % cols)*im.width, (i//cols)*im.height))
     out = io.BytesIO()
@@ -141,15 +142,8 @@ export function createAnimations(scene) {
 }
 '''.replace("KEY", json.dumps(spec.name))
         (bundle/"loader.js").write_text(loader, encoding="utf-8")
-        # mkdir is the no-clobber reservation; rollback only our reservation on failure.
+        # Publish every verified file in a single no-clobber directory rename.
         target = config.resolve(output_directory)
-        target.mkdir()
-        try:
-            for p in bundle.iterdir():
-                os.replace(p, target/p.name)
-        except Exception:
-            import shutil
-            shutil.rmtree(target)
-            raise
+        publish_directory(bundle, target)
     return {"ok": True, "output_directory": str(target), "qa": qa,
             "files": ["sheet.png", "atlas.json", "animations.json", "qa.json", "contract.json", "loader.js"]}

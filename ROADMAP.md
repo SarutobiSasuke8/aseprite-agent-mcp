@@ -10,12 +10,15 @@
 - [x] Verified row-sheet export and Phaser atlas/animation loader.
 - [x] Synthetic 16-frame MCP stdio proof and actual Phaser playback.
 - [x] Packaging, local test lane, CI definition and operating documentation.
+- [x] Whole-call advisory workspace locking with contention, cancellation and process-exit regressions.
+- [x] Atomic no-overwrite Phaser bundle publication with interrupted-write and process-termination regressions.
+- [x] Preview size rejection before contact-sheet allocation; package classifier corrected to alpha.
 
 ## Next production pass
 
 - [ ] Real artist-reviewed directional walk cycle and versioned visual golden files.
-- [ ] Snapshot/concurrent-writer locking and broader inherited-tool resource limits.
-- [ ] Durable regression coverage for partial bundle writes and host crashes.
+- [ ] Broader inherited-tool resource limits and GUI/direct-call coordination.
+- [ ] Power-loss durability and network filesystem qualification (separate from process-termination coverage).
 - [ ] Dedicated resampling, fringe, stray-pixel and palette-index checks.
 - [ ] Private consumer asset contract and a real game asset proof.
 - [ ] Safe per-layer/per-tag output expansion before restoring hidden exporters.

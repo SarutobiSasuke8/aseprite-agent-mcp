@@ -86,6 +86,8 @@ uv run python -m http.server 8795 --bind 127.0.0.1
 Open `http://127.0.0.1:8795/examples/phaser/`. The page reports success only after
 all four frames in all four animations have played. It uses a local npm dev
 dependency; the MCP itself has no network dependency after installation.
+For a fresh run under `workspace/my-proof`, use
+`http://127.0.0.1:8795/examples/phaser/?proof=my-proof` to play that run's output.
 
 ## Boundaries and current limits
 
@@ -96,13 +98,20 @@ dependency; the MCP itself has no network dependency after installation.
 - Traversal, symlink escapes, unsafe Windows device/stream paths and filename
   template expansion are rejected. Some inherited tools are deliberately hidden.
 - This is a local trusted-user tool, not an OS sandbox. Do not let untrusted local
-  processes swap symlinks or edit the same master concurrently. Use one writer.
+  processes swap symlinks or edit the same master concurrently. MCP calls sharing
+  a workspace use an OS advisory lock; a concurrent call fails with "Workspace
+  busy" and can be retried after the active call finishes. All servers writing
+  shared assets must use the same workspace, including when using extra roots.
+  Direct Python calls, the editor GUI and other programs do not take this lock.
 - QA compares composite RGBA pixels. It does not prove artistic quality, correct
   anatomy/motion, palette-index identity, anchor semantics or absence of smoothing
   within an allowed palette. Anchor checks suit grounded same-subject animation.
 - The test fixture is procedural evidence, not production walk-cycle art.
-- Multi-file bundles are validated in staging; publication uses a reserved new
-  directory with cleanup on failure, not a crash-atomic multi-file transaction.
+- Phaser bundles are validated in staging and published with one atomic,
+  no-overwrite directory rename on supported local Windows, Linux and macOS
+  filesystems. Unsupported rename semantics fail closed. Process termination
+  leaves the final path absent or complete; it can leave a hidden staging folder.
+  This does not guarantee durability through power loss or network filesystem behaviour.
 - Live-editor turn Undo, private project contracts, broader resampling/fringe
   checks, formal visual golden baselines and public publication remain work.
 

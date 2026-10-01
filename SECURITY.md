@@ -12,9 +12,25 @@ before writing a new destination directory; existing bundles are never replaced.
 
 Temporary scripts/images are internal implementation files, not user-selected
 paths. This confinement is not an operating-system sandbox: a hostile process
-running as the same user can race path checks or mutate files. Run one writer per
-workspace; do not share it with an untrusted local process. Aseprite loads files
+running as the same user can race path checks or mutate files. Do not share the
+workspace with an untrusted local process. Aseprite loads files
 using its own parser, so keep the editor updated and avoid hostile native files.
+
+Every MCP tool call holds an exclusive, non-blocking OS advisory lock for the
+whole workflow. Cooperating server processes must share one workspace when they
+share assets, even if assets live in additional allowed roots. The reserved
+`.aseprite-agent.lock` file persists; do not remove or replace it. Ownership is
+released on call completion, error, cancellation or process exit. After an
+unexpected server exit, ensure any orphaned Aseprite process has also exited
+before retrying an edit. The GUI, direct Python calls and other programs do not
+honour this lock. Network filesystem locking is outside the tested scope.
+
+Phaser bundles use same-filesystem, no-overwrite directory publication after
+verification: Windows rename, Linux `renameat2(RENAME_NOREPLACE)` or macOS
+`renamex_np(RENAME_EXCL)`. Unsupported platforms/filesystems fail closed. No final
+directory is exposed during staging. Process termination may leave an internal
+`.aseagent-export-*` staging folder; inspect and remove it only when no writer is
+active. Publication provides atomic visibility, not power-loss durability.
 
 The contract pipeline caps decoded input at 16 million pixels; new canvases at
 one million pixels; previews at 16 million scaled pixels. Inherited tools have

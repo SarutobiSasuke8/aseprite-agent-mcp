@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
+from aseprite_mcp.core.workspace_lock import workspace_lock
 
 
 async def proof(output):
@@ -34,6 +35,11 @@ async def proof(output):
                         (output/f'preview-{len(transcript)}.png').write_bytes(base64.b64decode(item.data))
                 transcript.append({'tool':name,'result':values})
                 return values[0] if values else None
+            # A different process must receive an MCP tool error while we hold
+            # the workspace. The same stdio session must recover after release.
+            with workspace_lock(output):
+                busy = await session.call_tool('health_check', {})
+                assert busy.isError and any('Workspace busy' in getattr(item, 'text', '') for item in busy.content)
             health=await call('health_check',{})
             assert health['ok'], health
             await call('create_sprite',{'filename':'robot.aseprite','width':16,'height':16})
@@ -75,7 +81,7 @@ async def proof(output):
             await call('ase_apply_and_preview',{'filename':'broken.aseprite','operations':[{'op':'set_pixel','args':{'x':0,'y':15,'color':'#ff00ff80'}}]})
             broken=await call('ase_export_phaser',{'filename':'broken.aseprite','output_directory':'rejected','contract':contract})
             assert not broken['ok'] and not (output/'rejected').exists()
-    report={'passed':True,'transport':'MCP stdio','tools_available':len(tools.tools),'frames':16,'distinct_frames':16,'roundtrip':True,'batch_rollback':True,'overwrite_rejected':True,'escape_rejected':True,'broken_contract_rejected':True,'transcript':transcript}
+    report={'passed':True,'transport':'MCP stdio','tools_available':len(tools.tools),'frames':16,'distinct_frames':16,'roundtrip':True,'batch_rollback':True,'overwrite_rejected':True,'escape_rejected':True,'broken_contract_rejected':True,'workspace_contention_rejected':True,'recovered_after_lock_release':True,'transcript':transcript}
     (output/'proof.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
     print(json.dumps({k:v for k,v in report.items() if k!='transcript'},indent=2))
 
