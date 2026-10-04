@@ -97,9 +97,12 @@ def allowed_roots() -> list[Path]:
 def resolve(filename: str) -> Path:
     """Resolve before mkdir; absolute opt-in never bypasses allowed roots."""
     from pathlib import PureWindowsPath
+    from .workspace_lock import LOCK_NAME
     ws = workspace().resolve()
     p = Path(filename)
     win = PureWindowsPath(filename)
+    if any(part.casefold() == LOCK_NAME for part in win.parts):
+        raise WorkspaceError("Reserved workspace lock path")
     # Reject traversal, NTFS streams/device names and template expansion inputs.
     if not filename or ".." in win.parts or any(c in filename for c in ("\x00", "{", "}", "\n", "\r")):
         raise WorkspaceError("Path escapes the workspace or contains unsafe components")
@@ -114,6 +117,8 @@ def resolve(filename: str) -> Path:
     if p.is_absolute() and not allow_absolute():
         raise WorkspaceError("Absolute paths are disabled; use workspace-relative paths")
     full = (p if p.is_absolute() else ws / p).resolve()
+    if any(part.casefold() == LOCK_NAME for part in full.parts):
+        raise WorkspaceError("Reserved workspace lock path")
     if not any(full.is_relative_to(r) for r in allowed_roots()):
         raise WorkspaceError("Path escapes the workspace and configured allowed roots")
     full.parent.mkdir(parents=True, exist_ok=True)
