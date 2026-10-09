@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from ..app import mcp
+from ..core.limits import MAX_CANVAS_PIXELS, check_canvas
 from ..core.paths import ensure_output_path
 from ..core.runner import run_lua
 from .common import lua_path, parse_color, resolve_path
@@ -120,6 +121,7 @@ def resize_canvas(
     anchor controls where existing content sits in the new canvas:
     "top_left" (default) or "center".
     """
+    check_canvas(int(width), int(height))
     src = resolve_path(filename)
     args = {
         "src": lua_path(src),
@@ -177,12 +179,17 @@ def scale_sprite(
     src = resolve_path(filename)
     if factor is None and width is None and height is None:
         raise ValueError("Provide either factor or width/height.")
+    if factor is not None and not 0 < float(factor) <= 64:
+        raise ValueError("factor must be greater than 0 and at most 64.")
+    if width is not None or height is not None:
+        check_canvas(int(width or 1), int(height or 1))
     args = {
         "src": lua_path(src),
         "factor": factor,
         "width": width,
         "height": height,
         "method": method,
+        "max_pixels": MAX_CANVAS_PIXELS,
     }
     body = """
     local spr = open_sprite(ARG.src)
@@ -194,6 +201,9 @@ def scale_sprite(
     end
     w = w or spr.width
     h = h or spr.height
+    if w * h > ARG.max_pixels then
+      error("Scaled canvas " .. w .. "x" .. h .. " exceeds " .. ARG.max_pixels .. " pixels")
+    end
     app.command.SpriteSize{ ui = false, width = w, height = h, method = ARG.method }
     save_sprite(spr)
     RESULT = sprite_info(spr)

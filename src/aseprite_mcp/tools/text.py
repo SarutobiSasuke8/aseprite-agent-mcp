@@ -76,7 +76,15 @@ def draw_text(
     """
     from PIL import ImageFont
 
+    from ..core.limits import MAX_FONT_SIZE, MAX_TEXT_LENGTH, MAX_TEXT_SCALE
+
     scale = max(1, int(scale))
+    if scale > MAX_TEXT_SCALE:
+        raise ValueError(f"scale must be 1..{MAX_TEXT_SCALE}.")
+    if int(font_size) > MAX_FONT_SIZE:
+        raise ValueError(f"font_size must be at most {MAX_FONT_SIZE}.")
+    if len(text) > MAX_TEXT_LENGTH:
+        raise ValueError(f"text must be at most {MAX_TEXT_LENGTH} characters.")
     if font_path:
         font = ImageFont.truetype(str(resolve_path(font_path)), max(1, int(font_size)))
     else:

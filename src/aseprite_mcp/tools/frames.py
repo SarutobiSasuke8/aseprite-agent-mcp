@@ -31,9 +31,9 @@ def add_frame(
     local spr = open_sprite(ARG.src)
     local fr
     if ARG.copy_from ~= nil then
-      fr = spr:newFrame(clamp_frame(spr, ARG.copy_from))
+      fr = append_frame(spr, clamp_frame(spr, ARG.copy_from))
     else
-      fr = spr:newEmptyFrame(#spr.frames + 1)
+      fr = append_frame(spr, nil)
     end
     fr.duration = ARG.duration_ms / 1000.0
     save_sprite(spr)
