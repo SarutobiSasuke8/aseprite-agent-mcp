@@ -33,24 +33,26 @@ def _structured_batch_error(message: str) -> LuaToolError | None:
     return None
 
 
-@mcp.tool()
+OPERATIONS_HELP = (
+    'Each operation is {"op": "<name>", "args": {...}}. Ops run in order against the same '
+    "open sprite, so later ops see earlier ones (add a layer, then draw on it). Coordinates "
+    "are pixels from the top-left (0,0); frames are 1-based and must exist; layer is a name "
+    "or 1-based index and defaults to the top layer; durations are milliseconds. "
+    "'?' marks an optional arg.\n" + oplib.describe_ops()
+)
+
+APPLY_DESCRIPTION = (
+    "Apply a list of edit operations to a sprite in one atomic, single-process batch. "
+    "If any op fails, the whole batch is rolled back, nothing is saved, and the error names "
+    "the failing op index. dry_run=true checks the list without launching Aseprite (shape "
+    "only; a missing layer still fails on a real run). Returns a workflow_manifest.v1 with a "
+    "per-op operations list.\n\n" + OPERATIONS_HELP
+)
+
+
+@mcp.tool(description=APPLY_DESCRIPTION)
 def apply_operations(filename: str, operations: list[dict], dry_run: bool = False) -> dict:
-    """Apply a list of edit operations to a sprite in one atomic, single-process batch.
-
-    Each operation is `{"op": "<name>", "args": {...}}`. Supported ops (v1):
-    add_layer, rename_layer, set_layer_visible, set_layer_opacity, remove_layer,
-    add_frame, duplicate_frame, set_frame_duration, add_tag, remove_tag, set_pixel,
-    draw_line, draw_rectangle, fill_rectangle, draw_ellipse, fill_ellipse, fill_layer,
-    clear_layer, add_slice, remove_slice, replace_color. Ops run **in order against the
-    same open sprite**, so later ops see earlier ones (e.g. add a layer then draw on it).
-
-    Atomic: if any op fails the whole batch is rolled back and nothing is saved; the
-    error names the failing op index. `dry_run=True` validates the op list and returns
-    the plan **without launching Aseprite** (shape checks only — runtime issues like a
-    missing layer surface on a real run).
-
-    Returns a `workflow_manifest.v1` (kind "batch") with a per-op `operations` list.
-    """
+    """Apply edit operations atomically. See APPLY_DESCRIPTION for the op vocabulary."""
     normalized = oplib.validate_operations(operations)  # raises ValidationFailed on bad shape
 
     if dry_run:
@@ -78,6 +80,7 @@ def apply_operations(filename: str, operations: list[dict], dry_run: bool = Fals
         sprite=sprite_summary(result["sprite"]),
         operations=result.get("operations", []),
         suggested_next_actions=[
-            f"Validate it's game-ready: validate_sprite_for_game_export('{filename}').",
+            f"Review it: ase_preview_animation('{filename}').",
+            f"Check it against a contract: ase_validate_asset_contract('{filename}', contract).",
         ],
     )
