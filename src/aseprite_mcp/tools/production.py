@@ -9,8 +9,8 @@ import tempfile
 import time
 from pathlib import Path
 
-from PIL import Image, ImageDraw
 from mcp.server.fastmcp import Image as MCPImage
+from PIL import Image, ImageDraw
 from pydantic import Field
 
 from ..app import mcp

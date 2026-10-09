@@ -17,7 +17,9 @@
 ## Next production pass
 
 - [ ] Real artist-reviewed directional walk cycle and versioned visual golden files.
-- [ ] Broader inherited-tool resource limits and GUI/direct-call coordination.
+- [x] Tool profiles, cast tools, typed contracts and a cast atlas export (0.2.0).
+- [x] Crash-safe saves, strict frame numbers and bounded drawing, canvas and text sizes (0.2.0).
+- [ ] GUI/direct-call coordination for the remaining inherited tools.
 - [ ] Power-loss durability and network filesystem qualification (separate from process-termination coverage).
 - [ ] Dedicated resampling, fringe, stray-pixel and palette-index checks.
 - [ ] Private consumer asset contract and a real game asset proof.

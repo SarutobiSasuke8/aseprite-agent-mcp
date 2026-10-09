@@ -11,6 +11,7 @@ import os
 import time
 
 from mcp.server.fastmcp import FastMCP
+
 from .core import config
 from .core.workspace_lock import WorkspaceBusyError, workspace_lock
 

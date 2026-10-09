@@ -6,9 +6,9 @@ import time
 import pytest
 from pydantic import ValidationError
 
+from aseprite_mcp.core import oplib
 from aseprite_mcp.core.contract import AssetContract
 from aseprite_mcp.core.errors import ValidationFailed
-from aseprite_mcp.core import oplib
 
 
 def _names():
@@ -44,6 +44,7 @@ def test_agent_unit_unknown_profile_name_fails_loudly():
 
 def test_agent_unit_server_main_routes_through_curated_profile():
     import inspect
+
     from aseprite_mcp import server
     assert "agent_server" in inspect.getsource(server.main)
 
@@ -142,6 +143,7 @@ def test_agent_unit_lock_wait_zero_fails_fast(monkeypatch):
 @pytest.fixture
 def cast_exporter(tmp_path, monkeypatch):
     from PIL import Image
+
     from aseprite_mcp.tools import production
     monkeypatch.setenv("ASEPRITE_MCP_WORKSPACE", str(tmp_path))
 
@@ -186,3 +188,23 @@ def test_agent_unit_replace_refuses_non_bundle_directory(cast_exporter, tmp_path
         production.ase_export_cast_atlas("town", [{"filename": "a.aseprite", "contract": contract("red")}],
                                          "precious", replace=True)
     assert (tmp_path / "precious" / "notes.txt").read_text() == "keep"
+
+
+@pytest.mark.parametrize("name", ["CON .txt", "COM¹.png", "CONIN$.png", "conout$", "LPT³.aseprite"])
+def test_agent_unit_reserved_device_names_rejected(name, tmp_path, monkeypatch):
+    from aseprite_mcp.core import config
+    from aseprite_mcp.core.errors import WorkspaceError
+    monkeypatch.setenv("ASEPRITE_MCP_WORKSPACE", str(tmp_path))
+    with pytest.raises(WorkspaceError):
+        config.resolve(name)
+
+
+@pytest.mark.skipif(__import__("os").name != "nt", reason="root-relative paths are a Windows form")
+def test_agent_unit_root_relative_path_rejected(tmp_path, monkeypatch):
+    from aseprite_mcp.core import config
+    from aseprite_mcp.core.errors import WorkspaceError
+    monkeypatch.setenv("ASEPRITE_MCP_WORKSPACE", str(tmp_path))
+    monkeypatch.setenv("ASEPRITE_MCP_ALLOW_ABSOLUTE", "0")
+    with pytest.raises(WorkspaceError, match="Root-relative"):
+        config.resolve(r"\Assets\x.png")
+    assert config.resolve("ok/hero.aseprite").name == "hero.aseprite"

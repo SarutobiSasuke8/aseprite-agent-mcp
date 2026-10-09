@@ -1,12 +1,14 @@
 import json
 import subprocess
+
 import pytest
 from PIL import Image
 from pydantic import ValidationError
-from aseprite_mcp.core.contract import AssetContract, validate_frames
+
 from aseprite_mcp.core import config
+from aseprite_mcp.core.contract import AssetContract, validate_frames
+from aseprite_mcp.core.errors import LuaToolError, WorkspaceError
 from aseprite_mcp.core.runner import _parse_result
-from aseprite_mcp.core.errors import WorkspaceError, LuaToolError
 
 
 def fixture():
@@ -74,8 +76,8 @@ def test_agent_unit_nonzero_with_result_is_failure():
 
 
 def test_agent_unit_export_cannot_replace_master(tmp_path, monkeypatch):
-    from aseprite_mcp.core.paths import ensure_output_path
     from aseprite_mcp.core.errors import ExportError
+    from aseprite_mcp.core.paths import ensure_output_path
     monkeypatch.setenv('ASEPRITE_MCP_WORKSPACE', str(tmp_path))
     with pytest.raises(ExportError, match='editable master'):
         ensure_output_path('hero.aseprite', overwrite=True, error_type=ExportError)
@@ -83,7 +85,8 @@ def test_agent_unit_export_cannot_replace_master(tmp_path, monkeypatch):
 
 def test_agent_unit_curated_tools():
     import asyncio
-    from aseprite_mcp.agent_server import configure, mcp, DISABLED
+
+    from aseprite_mcp.agent_server import DISABLED, configure, mcp
     configure()
     names = {t.name for t in asyncio.run(mcp.list_tools())}
     assert not names.intersection(DISABLED)

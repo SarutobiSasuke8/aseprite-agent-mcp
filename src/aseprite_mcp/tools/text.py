@@ -12,7 +12,8 @@ _MAX_TEXT_PIXELS = 200_000
 
 
 def _render_text_pixels(text: str, scale: int, font, spacing: int, threshold: int):
-    from PIL import Image as PILImage, ImageDraw
+    from PIL import Image as PILImage
+    from PIL import ImageDraw
 
     measure = ImageDraw.Draw(PILImage.new("L", (1, 1)))
     try:

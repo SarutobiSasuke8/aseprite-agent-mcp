@@ -93,8 +93,9 @@ def test_antialiased_line_has_partial_alpha():
 
 
 def test_export_layers(tmp_path):
-    from aseprite_mcp.core.errors import WorkspaceError
     import pytest
+
+    from aseprite_mcp.core.errors import WorkspaceError
     with pytest.raises(WorkspaceError, match="unsafe components"):
         export.export_layers("a/exp.aseprite", str(tmp_path / "ly_{layer}.png"), 1)
 

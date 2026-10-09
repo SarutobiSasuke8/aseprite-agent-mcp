@@ -11,7 +11,8 @@
       ],
       "env": {
         "ASEPRITE_PATH": "/absolute/path/to/aseprite",
-        "ASEPRITE_MCP_WORKSPACE": "/absolute/path/to/assets"
+        "ASEPRITE_MCP_WORKSPACE": "/absolute/path/to/assets",
+        "ASEPRITE_MCP_TOOLS": "core"
       }
     }
   }

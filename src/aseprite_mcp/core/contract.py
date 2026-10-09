@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 from typing import Literal
+
 from PIL import Image
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -93,7 +94,8 @@ def validate_frames(info: dict, frames: list[Image.Image], contract: AssetContra
         partial = sum(1 for p in pixels if p[3] not in (0, 255))
         if contract.alpha == "binary" and partial:
             fail("binary_alpha", frame=i, pixels=partial)
-        wrong = sorted({"#%02x%02x%02x%02x" % p for p in pixels if p[3] and colors and "#%02x%02x%02x%02x" % p not in colors})
+        used = {"#%02x%02x%02x%02x" % p for p in pixels if p[3]} if colors else set()
+        wrong = sorted(used - colors)
         if wrong:
             fail("palette_membership", frame=i, colors=wrong[:16])
         bbox = im.getchannel("A").getbbox()
@@ -115,7 +117,8 @@ def validate_frames(info: dict, frames: list[Image.Image], contract: AssetContra
             fail("tag_direction", tag=row.name, expected=row.playback, actual=tag.get("aniDir"))
         measured = [m for m in measurements[cursor-1:last] if m["bounds"]]
         if measured and contract.anchor and row.check_anchor:
-            for field, limit in (("foot", contract.anchor.max_foot_drift), ("center", contract.anchor.max_center_drift)):
+            limits = (("foot", contract.anchor.max_foot_drift), ("center", contract.anchor.max_center_drift))
+            for field, limit in limits:
                 drift = max(m[field] for m in measured) - min(m[field] for m in measured)
                 if drift > limit:
                     fail("anchor_" + field + "_drift", tag=row.name, actual=drift, maximum=limit)

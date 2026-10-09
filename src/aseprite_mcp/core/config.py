@@ -94,9 +94,18 @@ def allowed_roots() -> list[Path]:
     return [workspace().resolve(), *(Path(r).resolve() for r in roots)]
 
 
+# DOS device names, including superscript-digit ports and console handles.
+_RESERVED_DEVICE_NAMES = frozenset({
+    "CON", "PRN", "AUX", "NUL", "CONIN$", "CONOUT$",
+    *(f"COM{i}" for i in [*range(1, 10), "¹", "²", "³"]),
+    *(f"LPT{i}" for i in [*range(1, 10), "¹", "²", "³"]),
+})
+
+
 def resolve(filename: str) -> Path:
     """Resolve before mkdir; absolute opt-in never bypasses allowed roots."""
     from pathlib import PureWindowsPath
+
     from .workspace_lock import LOCK_NAME
     ws = workspace().resolve()
     p = Path(filename)
@@ -109,11 +118,15 @@ def resolve(filename: str) -> Path:
     for part in win.parts:
         if part == win.anchor:
             continue
-        stem = part.split(".")[0].upper()
-        if ":" in part or part.endswith((" ", ".")) or stem in {"CON", "PRN", "AUX", "NUL", *(f"COM{i}" for i in range(1,10)), *(f"LPT{i}" for i in range(1,10))}:
+        stem = part.split(".")[0].rstrip(" ").upper()
+        if ":" in part or part.endswith((" ", ".")) or stem in _RESERVED_DEVICE_NAMES:
             raise WorkspaceError("Unsafe Windows path component")
     if win.drive and not win.is_absolute():
         raise WorkspaceError("Drive-relative paths are disabled")
+    if win.root and not win.drive and not p.is_absolute():
+        # "\x.png" is root-relative on Windows: it would leave the workspace for the
+        # current drive's root without passing the absolute-path opt-in below.
+        raise WorkspaceError("Root-relative paths are disabled; use workspace-relative paths")
     if p.is_absolute() and not allow_absolute():
         raise WorkspaceError("Absolute paths are disabled; use workspace-relative paths")
     full = (p if p.is_absolute() else ws / p).resolve()

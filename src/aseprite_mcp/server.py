@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .app import mcp
+from .app import mcp  # noqa: F401  (re-exported: agent_server and tests import it from here)
 
 # Importing each module registers its @mcp.tool() functions on `mcp`.
 from .tools import (  # noqa: F401,E402

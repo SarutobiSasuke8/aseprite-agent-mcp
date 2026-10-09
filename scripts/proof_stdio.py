@@ -8,14 +8,16 @@ import json
 import os
 import sys
 from pathlib import Path
+
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
+
 from aseprite_mcp.core.workspace_lock import workspace_lock
 
 
 async def proof(output):
     output.mkdir(parents=True,exist_ok=False)
-    env = {**os.environ,'ASEPRITE_MCP_WORKSPACE':str(output), 'ASEPRITE_MCP_ALLOW_ABSOLUTE':'0', 'ASEPRITE_AGENT_ALLOWED_ROOTS':'[]'}
+    env = {**os.environ,'ASEPRITE_MCP_WORKSPACE':str(output), 'ASEPRITE_MCP_ALLOW_ABSOLUTE':'0', 'ASEPRITE_AGENT_ALLOWED_ROOTS':'[]', 'ASEPRITE_MCP_TOOLS':'all', 'ASEPRITE_MCP_LOCK_WAIT':'0'}
     params = StdioServerParameters(command=sys.executable,args=['-m','aseprite_mcp.agent_server'],env=env)
     transcript=[]
     async with stdio_client(params) as (read,write):
