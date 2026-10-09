@@ -12,7 +12,8 @@ _MAX_TEXT_PIXELS = 200_000
 
 
 def _render_text_pixels(text: str, scale: int, font, spacing: int, threshold: int):
-    from PIL import Image as PILImage, ImageDraw
+    from PIL import Image as PILImage
+    from PIL import ImageDraw
 
     measure = ImageDraw.Draw(PILImage.new("L", (1, 1)))
     try:
@@ -76,7 +77,15 @@ def draw_text(
     """
     from PIL import ImageFont
 
+    from ..core.limits import MAX_FONT_SIZE, MAX_TEXT_LENGTH, MAX_TEXT_SCALE
+
     scale = max(1, int(scale))
+    if scale > MAX_TEXT_SCALE:
+        raise ValueError(f"scale must be 1..{MAX_TEXT_SCALE}.")
+    if int(font_size) > MAX_FONT_SIZE:
+        raise ValueError(f"font_size must be at most {MAX_FONT_SIZE}.")
+    if len(text) > MAX_TEXT_LENGTH:
+        raise ValueError(f"text must be at most {MAX_TEXT_LENGTH} characters.")
     if font_path:
         font = ImageFont.truetype(str(resolve_path(font_path)), max(1, int(font_size)))
     else:

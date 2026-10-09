@@ -198,6 +198,7 @@ def export_onion_skin(
     next: int = 0,
     ghost_opacity: int = 80,
     scale: int = 4,
+    overwrite: bool = False,
 ) -> dict:
     """Export a frame with neighbouring frames ghosted behind it (onion skin).
 
@@ -206,10 +207,11 @@ def export_onion_skin(
         previous, next: How many earlier/later frames to ghost.
         ghost_opacity: Max opacity (0-255) of the nearest ghost; further frames fade.
         scale: Integer upscaling factor for the output PNG.
+        overwrite: Replace an existing output file. Editable .ase/.aseprite masters are never replaced.
     """
     args = {
         "src": lua_path(resolve_path(filename)),
-        "output": lua_path(resolve_path(output)),
+        "output": lua_path(ensure_output_path(output, overwrite=overwrite, error_type=ExportError)),
         "frame": int(frame),
         "previous": max(0, int(previous)),
         "next": max(0, int(next)),
@@ -266,16 +268,18 @@ def export_frames(filename: str, output_pattern: str, scale: int = 1) -> dict:
 
 
 @mcp.tool()
-def import_image(input_image: str, output: str) -> dict:
+def import_image(input_image: str, output: str, overwrite: bool = False) -> dict:
     """Create an editable .aseprite sprite from a flat image (.png/.bmp/.jpg/...).
 
     Args:
         input_image: Source raster image.
         output: Destination .aseprite path.
+        overwrite: Replace an existing file at output. Defaults to False so masters are not clobbered.
     """
+    dst = ensure_output_path(output, overwrite=overwrite)
     args = {
         "src": lua_path(resolve_path(input_image)),
-        "dst": lua_path(resolve_path(output)),
+        "dst": lua_path(dst),
     }
     body = """
     local spr = open_sprite(ARG.src)
@@ -283,5 +287,5 @@ def import_image(input_image: str, output: str) -> dict:
     RESULT = sprite_info(spr)
     """
     info = run_lua(body, args)
-    info["path"] = str(resolve_path(output))
+    info["path"] = str(dst)
     return info

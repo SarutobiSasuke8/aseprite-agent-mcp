@@ -22,6 +22,22 @@ MAX_PIXEL_LIST_LENGTH = 65_536
 MAX_TILE_LIST_LENGTH = 65_536
 # Maximum number of palette colours in one set_palette call (indexed-palette ceiling).
 MAX_COLOR_LIST_LENGTH = 256
+# Maximum canvas area after create/resize/scale (same ceiling as create_sprite).
+MAX_CANVAS_PIXELS = 1_000_000
+# Text rendering ceilings, checked before any glyph is rasterised.
+MAX_TEXT_SCALE = 32
+MAX_FONT_SIZE = 256
+MAX_TEXT_LENGTH = 512
+
+
+def check_canvas(width: int, height: int) -> None:
+    """Raise ``ValidationFailed`` for a non-positive or oversized canvas."""
+    if width < 1 or height < 1:
+        raise ValidationFailed(f"Canvas must be at least 1x1, got {width}x{height}.")
+    if width * height > MAX_CANVAS_PIXELS:
+        raise ValidationFailed(
+            f"Canvas {width}x{height} exceeds {MAX_CANVAS_PIXELS:,} pixels. Use a smaller size."
+        )
 
 
 def check_list_length(

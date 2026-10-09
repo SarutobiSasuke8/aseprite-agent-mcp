@@ -27,12 +27,24 @@ def kill_child(process):
     process.wait(timeout=10)
 
 
+def wait_until_free(folder, seconds=10.0):
+    deadline = time.monotonic() + seconds
+    while True:
+        try:
+            with workspace_lock(folder):
+                return
+        except WorkspaceBusyError:
+            if time.monotonic() > deadline:
+                raise
+            time.sleep(0.05)
+
+
 @contextmanager
 def child(code, folder, *args):
     process = subprocess.Popen([sys.executable, "-c", code, str(folder), *args],
                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     try:
-        deadline = time.monotonic() + 15
+        deadline = time.monotonic() + 60  # slow CI runners start Python slowly
         while not (folder / "ready").exists():
             if process.poll() is not None:
                 pytest.fail(f"Child exited before ready: {process.communicate()}")
@@ -63,6 +75,7 @@ def test_cross_process_contention_and_kill_release(tmp_path):
             with workspace_lock(tmp_path):
                 pytest.fail("Contending process acquired workspace")
         kill_child(process)
+        wait_until_free(tmp_path)
         with workspace_lock(tmp_path):
             assert (tmp_path / LOCK_NAME).exists()
     # Lock file persists; ownership is an OS lock, never a stale PID sentinel.

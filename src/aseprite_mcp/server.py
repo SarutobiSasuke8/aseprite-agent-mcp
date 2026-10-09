@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
-from .app import mcp
+from .app import mcp  # noqa: F401  (re-exported: agent_server and tests import it from here)
 
 # Importing each module registers its @mcp.tool() functions on `mcp`.
 from .tools import (  # noqa: F401,E402
     asset_spec,
     batch,
     brushes,
+    cast,
     cels,
     drawing,
     effects,
@@ -33,8 +34,10 @@ from .tools import (  # noqa: F401,E402
 
 
 def main() -> None:
-    """Run the MCP server over stdio."""
-    mcp.run()
+    """Run the curated agent server; never the unfiltered registry."""
+    from .agent_server import main as agent_main
+
+    agent_main()
 
 
 if __name__ == "__main__":

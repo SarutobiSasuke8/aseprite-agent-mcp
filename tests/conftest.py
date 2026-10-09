@@ -13,8 +13,8 @@ The workspace points at a temp dir, and absolute paths are allowed so integratio
 tests can export into pytest's tmp_path.
 """
 
-import os
 import json
+import os
 
 import pytest
 

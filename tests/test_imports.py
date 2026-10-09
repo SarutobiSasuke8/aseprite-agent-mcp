@@ -5,20 +5,20 @@ import sys
 
 
 def test_core_modules_import():
-    import aseprite_mcp.core.config       # noqa: F401
-    import aseprite_mcp.core.errors       # noqa: F401
-    import aseprite_mcp.core.luagen       # noqa: F401
-    import aseprite_mcp.core.manifest     # noqa: F401
-    import aseprite_mcp.core.models       # noqa: F401
-    import aseprite_mcp.core.runner       # noqa: F401
-    import aseprite_mcp.core.validation   # noqa: F401
+    import aseprite_mcp.core.config  # noqa: F401
+    import aseprite_mcp.core.errors  # noqa: F401
+    import aseprite_mcp.core.luagen  # noqa: F401
+    import aseprite_mcp.core.manifest  # noqa: F401
+    import aseprite_mcp.core.models  # noqa: F401
+    import aseprite_mcp.core.runner  # noqa: F401
+    import aseprite_mcp.core.validation  # noqa: F401
 
 
 def test_backwards_compatible_top_level_imports():
-    from aseprite_mcp.config import find_aseprite, resolve            # noqa: F401
+    from aseprite_mcp.config import find_aseprite, resolve  # noqa: F401
     from aseprite_mcp.errors import AsepriteMCPError, WorkspaceError  # noqa: F401
-    from aseprite_mcp.luagen import to_lua                            # noqa: F401
-    from aseprite_mcp.runner import AsepriteError, run_cli, run_lua   # noqa: F401
+    from aseprite_mcp.luagen import to_lua  # noqa: F401
+    from aseprite_mcp.runner import AsepriteError, run_cli, run_lua  # noqa: F401
 
 
 def test_error_alias_survives():

@@ -9,7 +9,7 @@ build/
 # uv
 .uv/
 
-# Aseprite MCP workspace (generated sprites) â€” keep the folder, ignore contents
+# Aseprite MCP workspace (generated sprites): keep the folder, ignore contents
 /workspace/*
 !/workspace/.gitkeep
 
@@ -26,3 +26,6 @@ node_modules/
 # Local operating context — intentionally not part of the public package/repository
 AGENTS.md
 BUILD_PLAN.md
+
+# Owner-specific distribution patterns (see scripts/check_distribution.py)
+.private-patterns

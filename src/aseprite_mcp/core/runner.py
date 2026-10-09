@@ -31,6 +31,7 @@ def run_lua(body: str, args: dict | None = None, timeout: float | None = None) -
             fh.write(script)
         proc = subprocess.run(
             [exe, "-b", "--script", path],
+            stdin=subprocess.DEVNULL,
             capture_output=True,
             text=True,
             encoding="utf-8",
@@ -91,6 +92,7 @@ def run_cli(cli_args: list[str], timeout: float | None = None) -> subprocess.Com
     try:
         proc = subprocess.run(
             [exe, "-b", *cli_args],
+            stdin=subprocess.DEVNULL,
             capture_output=True,
             text=True,
             encoding="utf-8",

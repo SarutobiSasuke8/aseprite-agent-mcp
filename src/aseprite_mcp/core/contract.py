@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 from typing import Literal
+
 from PIL import Image
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -16,9 +17,34 @@ class Cell(StrictModel):
     height: int = Field(ge=1, le=1024)
 
 
+_TAG_PATTERN = r"^[A-Za-z][A-Za-z0-9_-]{0,47}$"
+
+
 class Row(StrictModel):
-    direction: str = Field(pattern=r"^[A-Za-z][A-Za-z0-9_-]{0,47}$")
-    frames: int = Field(ge=1, le=64)
+    """One animation: an exact, contiguous Aseprite tag laid out as one sheet row."""
+
+    tag: str | None = Field(default=None, pattern=_TAG_PATTERN,
+                            description="Aseprite tag name for this row, e.g. walk_down.")
+    direction: str | None = Field(default=None, pattern=_TAG_PATTERN,
+                                  description="Deprecated alias of tag.")
+    frames: int = Field(ge=1, le=64, description="Exact frame count of the tag.")
+    playback: Literal["forward", "pingpong"] = Field(
+        default="forward", description="Required tag direction; pingpong exports as a Phaser yoyo.")
+    repeat: int = Field(default=-1, ge=-1, le=1000,
+                        description="Phaser repeat count: -1 loops forever, 0 plays once.")
+    check_anchor: bool = Field(
+        default=True, description="Apply the contract anchor drift limits to this row. "
+                                  "Turn off for poses that legitimately move, such as lying down.")
+
+    @model_validator(mode="after")
+    def one_name(self):
+        if (self.tag is None) == (self.direction is None):
+            raise ValueError("give exactly one of tag or direction (tag preferred)")
+        return self
+
+    @property
+    def name(self) -> str:
+        return self.tag if self.tag is not None else self.direction
 
 
 class Anchor(StrictModel):
@@ -38,9 +64,9 @@ class AssetContract(StrictModel):
     @model_validator(mode="after")
     def consistent(self):
         import re
-        names = [r.direction for r in self.rows]
+        names = [r.name for r in self.rows]
         if len(set(names)) != len(names):
-            raise ValueError("row directions must be unique")
+            raise ValueError("row tags must be unique")
         if sum(r.frames for r in self.rows) * self.cell.width * self.cell.height > 16_777_216:
             raise ValueError("contract exceeds 16 million pixels")
         if any(not re.fullmatch(r"#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?", c) for c in self.palette):
@@ -68,7 +94,8 @@ def validate_frames(info: dict, frames: list[Image.Image], contract: AssetContra
         partial = sum(1 for p in pixels if p[3] not in (0, 255))
         if contract.alpha == "binary" and partial:
             fail("binary_alpha", frame=i, pixels=partial)
-        wrong = sorted({"#%02x%02x%02x%02x" % p for p in pixels if p[3] and colors and "#%02x%02x%02x%02x" % p not in colors})
+        used = {"#%02x%02x%02x%02x" % p for p in pixels if p[3]} if colors else set()
+        wrong = sorted(used - colors)
         if wrong:
             fail("palette_membership", frame=i, colors=wrong[:16])
         bbox = im.getchannel("A").getbbox()
@@ -82,17 +109,19 @@ def validate_frames(info: dict, frames: list[Image.Image], contract: AssetContra
     tags = {t["name"]: t for t in info.get("tags", [])}
     for row in contract.rows:
         last = cursor + row.frames - 1
-        tag = tags.get(row.direction)
+        tag = tags.get(row.name)
         if not tag or tag.get("from") != cursor or tag.get("to") != last:
-            fail("tag_layout", tag=row.direction, expected=[cursor, last])
-        elif tag.get("aniDir", "forward") != "forward":
-            fail("tag_direction", tag=row.direction, expected="forward")
+            actual = [tag.get("from"), tag.get("to")] if tag else None
+            fail("tag_layout", tag=row.name, expected=[cursor, last], actual=actual)
+        elif tag.get("aniDir", "forward") != row.playback:
+            fail("tag_direction", tag=row.name, expected=row.playback, actual=tag.get("aniDir"))
         measured = [m for m in measurements[cursor-1:last] if m["bounds"]]
-        if measured and contract.anchor:
-            for field, limit in (("foot", contract.anchor.max_foot_drift), ("center", contract.anchor.max_center_drift)):
+        if measured and contract.anchor and row.check_anchor:
+            limits = (("foot", contract.anchor.max_foot_drift), ("center", contract.anchor.max_center_drift))
+            for field, limit in limits:
                 drift = max(m[field] for m in measured) - min(m[field] for m in measured)
                 if drift > limit:
-                    fail("anchor_" + field + "_drift", tag=row.direction, actual=drift, maximum=limit)
+                    fail("anchor_" + field + "_drift", tag=row.name, actual=drift, maximum=limit)
         cursor = last + 1
     return {"schema": "aseprite-agent.qa.v1", "passed": not failures, "contract": contract.name,
             "failures": failures, "frames": measurements,

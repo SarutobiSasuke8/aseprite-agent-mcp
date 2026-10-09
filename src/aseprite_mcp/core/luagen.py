@@ -299,8 +299,34 @@ local function open_sprite(path)
   return spr
 end
 
+-- Crash-safe save: write a complete sibling copy first, then swap it in. A kill or
+-- crash mid-write leaves the previous master (or a recoverable .asemcp-bak) intact.
 local function save_sprite(spr)
-  spr:saveAs(spr.filename)
+  local target = spr.filename
+  -- Keep the real extension last: Aseprite picks the file format from it.
+  local stem, ext = target:match("^(.*)(%.[^%./\\]+)$")
+  if stem == nil then stem, ext = target, "" end
+  local tmp = stem .. ".asemcp-tmp" .. ext
+  local bak = target .. ".asemcp-bak"
+  os.remove(tmp)
+  spr:saveCopyAs(tmp)
+  local fh = io.open(tmp, "rb")
+  if fh == nil then error("Save failed: temporary copy was not written") end
+  local size = fh:seek("end"); fh:close()
+  if size == nil or size == 0 then os.remove(tmp); error("Save failed: temporary copy is empty") end
+  os.remove(bak)
+  local had_original = io.open(target, "rb")
+  if had_original ~= nil then
+    had_original:close()
+    local ok, err = os.rename(target, bak)
+    if not ok then os.remove(tmp); error("Save failed: could not stage original: " .. tostring(err)) end
+  end
+  local ok, err = os.rename(tmp, target)
+  if not ok then
+    if had_original ~= nil then os.rename(bak, target) end
+    error("Save failed: could not publish new copy: " .. tostring(err))
+  end
+  os.remove(bak)
 end
 
 local function _search_layers(layers, name)
@@ -316,23 +342,92 @@ end
 
 -- Resolve a layer by name (searched recursively, incl. groups), by 1-based
 -- top-level index, or fall back to the active/top layer when ref is nil.
+local function _layer_names(layers, out)
+  out = out or {}
+  for _, lyr in ipairs(layers) do
+    out[#out + 1] = lyr.name
+    if lyr.isGroup then _layer_names(lyr.layers, out) end
+  end
+  return out
+end
+
+-- Resolve a layer by name, by 1-based top-level index (a number, or a string of
+-- digits when no layer has that literal name), or the top layer when ref is nil.
 local function find_layer(spr, ref)
   if ref == nil then return spr.layers[#spr.layers] end
+  local lyr = nil
   if type(ref) == "number" then
-    local lyr = spr.layers[math.floor(ref)]
-    if lyr == nil then error("No layer at index " .. tostring(ref)) end
-    return lyr
+    lyr = spr.layers[math.floor(ref)]
+  else
+    lyr = _search_layers(spr.layers, tostring(ref))
+    if lyr == nil and tostring(ref):match("^%d+$") then lyr = spr.layers[tonumber(ref)] end
   end
-  local lyr = _search_layers(spr.layers, tostring(ref))
-  if lyr == nil then error("No layer named '" .. tostring(ref) .. "'") end
+  if lyr == nil then
+    error("No layer '" .. tostring(ref) .. "'. Layers (bottom to top): " ..
+          table.concat(_layer_names(spr.layers), ", ") ..
+          ". Top-level indexes run 1.." .. #spr.layers .. ".")
+  end
   return lyr
 end
 
+-- Validate a 1-based frame number. Out-of-range frames are an error, never a
+-- silent clamp, so an edit cannot land on a different frame than requested.
 local function clamp_frame(spr, n)
-  n = math.floor(tonumber(n) or 1)
-  if n < 1 then n = 1 end
-  if n > #spr.frames then n = #spr.frames end
-  return n
+  local v = tonumber(n)
+  if v == nil then v = 1 end
+  v = math.floor(v)
+  if v < 1 or v > #spr.frames then
+    error("Frame " .. tostring(n) .. " is out of range; this sprite has frames 1.." .. #spr.frames)
+  end
+  return v
+end
+
+-- Largest span a single drawing primitive may cover (guards against runaway loops).
+local MAX_SPAN = 16384
+local function check_span(what, ...)
+  for _, v in ipairs({ ... }) do
+    if math.abs(v) > MAX_SPAN then
+      error(what .. " extends beyond " .. MAX_SPAN .. " pixels; keep shapes near the canvas")
+    end
+  end
+end
+
+-- ===== frames and tags ============================================
+local function leaf_layers(layers, out)
+  out = out or {}
+  for _, lyr in ipairs(layers) do
+    if lyr.isGroup then leaf_layers(lyr.layers, out) else out[#out + 1] = lyr end
+  end
+  return out
+end
+
+-- Appending frames can extend tags that end on the last frame. Record and restore.
+local function snapshot_tags(spr)
+  local snap = {}
+  for i, t in ipairs(spr.tags) do snap[i] = { t, t.fromFrame.frameNumber, t.toFrame.frameNumber } end
+  return snap
+end
+local function restore_tags(snap)
+  for _, r in ipairs(snap) do
+    if r[1].fromFrame.frameNumber ~= r[2] then r[1].fromFrame = r[2] end
+    if r[1].toFrame.frameNumber ~= r[3] then r[1].toFrame = r[3] end
+  end
+end
+
+-- Append a new last frame. With copy_from, copy that frame's cels and duration.
+-- (Sprite:newFrame(n) inserts the copy AT n and shifts later frames, so it is not used.)
+local function append_frame(spr, copy_from)
+  local snap = snapshot_tags(spr)
+  local fr = spr:newEmptyFrame(#spr.frames + 1)
+  if copy_from ~= nil then
+    fr.duration = spr.frames[copy_from].duration
+    for _, lyr in ipairs(leaf_layers(spr.layers)) do
+      local cel = lyr:cel(copy_from)
+      if cel ~= nil then spr:newCel(lyr, fr, cel.image:clone(), cel.position) end
+    end
+  end
+  restore_tags(snap)
+  return fr
 end
 
 -- ===== drawing primitives (operate on an Image, sprite-space coords) ======
@@ -344,6 +439,7 @@ end
 
 local function draw_line_img(img, x0, y0, x1, y1, px)
   x0, y0, x1, y1 = math.floor(x0), math.floor(y0), math.floor(x1), math.floor(y1)
+  check_span("Line", x0, y0, x1, y1)
   local dx = math.abs(x1 - x0)
   local dy = -math.abs(y1 - y0)
   local sx = x0 < x1 and 1 or -1
@@ -361,9 +457,12 @@ end
 local function draw_rect_img(img, x, y, w, h, px, filled)
   x, y, w, h = math.floor(x), math.floor(y), math.floor(w), math.floor(h)
   if w <= 0 or h <= 0 then return end
+  check_span("Rectangle", x, y, w, h)
   if filled then
-    for yy = y, y + h - 1 do
-      for xx = x, x + w - 1 do img_set(img, xx, yy, px) end
+    local x0, y0 = math.max(x, 0), math.max(y, 0)
+    local x1, y1 = math.min(x + w - 1, img.width - 1), math.min(y + h - 1, img.height - 1)
+    for yy = y0, y1 do
+      for xx = x0, x1 do img:drawPixel(xx, yy, px) end
     end
   else
     for xx = x, x + w - 1 do img_set(img, xx, y, px); img_set(img, xx, y + h - 1, px) end
@@ -373,6 +472,7 @@ end
 
 local function draw_ellipse_img(img, cx, cy, rx, ry, px, filled)
   cx, cy, rx, ry = math.floor(cx), math.floor(cy), math.floor(math.abs(rx)), math.floor(math.abs(ry))
+  check_span("Ellipse", cx, cy, rx, ry)
   if rx == 0 or ry == 0 then
     draw_line_img(img, cx - rx, cy - ry, cx + rx, cy + ry, px)
     return
@@ -440,6 +540,7 @@ end
 -- Bresenham line as a list of {x,y} points.
 local function bresenham_points(x0, y0, x1, y1)
   x0, y0, x1, y1 = math.floor(x0), math.floor(y0), math.floor(x1), math.floor(y1)
+  check_span("Line", x0, y0, x1, y1)
   local pts = {}
   local dx = math.abs(x1 - x0)
   local dy = -math.abs(y1 - y0)
@@ -477,6 +578,7 @@ end
 
 -- Anti-aliased line (Xiaolin Wu) drawn with coverage blending.
 local function aa_line_img(spr, img, x0, y0, x1, y1, r, g, b)
+  check_span("Line", x0, y0, x1, y1)
   local function fpart(x) return x - math.floor(x) end
   local function rfpart(x) return 1 - fpart(x) end
   local steep = math.abs(y1 - y0) > math.abs(x1 - x0)
@@ -507,6 +609,7 @@ end
 -- Anti-aliased filled ellipse via 4x4 sub-pixel coverage.
 local function aa_ellipse_fill_img(spr, img, cx, cy, rx, ry, r, g, b)
   rx, ry = math.abs(rx), math.abs(ry)
+  check_span("Ellipse", cx, cy, rx, ry)
   if rx < 1 then rx = 1 end
   if ry < 1 then ry = 1 end
   for yy = math.floor(cy - ry - 1), math.ceil(cy + ry + 1) do

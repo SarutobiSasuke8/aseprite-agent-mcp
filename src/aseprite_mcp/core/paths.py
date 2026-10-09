@@ -11,7 +11,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from . import config
-from .errors import WorkspaceError, ExportError
+from .errors import ExportError, WorkspaceError
 
 
 def ensure_output_path(

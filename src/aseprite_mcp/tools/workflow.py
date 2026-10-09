@@ -422,7 +422,7 @@ def create_icon_set(
         suggested_next_actions=[
             "Draw each icon inside its named slice region.",
             f"Validate it's game-ready: validate_sprite_for_game_export('{filename}', tile_multiple={icon_size}).",
-            f"Export the atlas: export_game_asset_bundle('{filename}').",
+            f"Export the atlas: export_spritesheet('{filename}', 'atlas.png').",
         ],
     )
 
@@ -449,7 +449,7 @@ def create_rpg_item_sheet(
         suggested_next_actions=[
             "Draw each item inside its named slice region.",
             f"Validate it's game-ready: validate_sprite_for_game_export('{filename}', tile_multiple={item_size}).",
-            f"Export the atlas: export_game_asset_bundle('{filename}').",
+            f"Export the atlas: export_spritesheet('{filename}', 'atlas.png').",
         ],
     )
 
@@ -495,6 +495,7 @@ def make_8_direction_walk_template(
         suggested_next_actions=[
             "Draw each direction's walk frames under its tag.",
             f"Validate it's game-ready: validate_sprite_for_game_export('{filename}', required_tags={dirs}).",
-            f"Export per direction: export_tags('{filename}', 'walk/{{tag}}_{{frame}}.png').",
+            "Export per direction: write a contract with one row per walk tag, then "
+            f"ase_validate_asset_contract('{filename}', contract) and ase_export_phaser.",
         ],
     )
