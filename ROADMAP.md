@@ -16,7 +16,7 @@
 
 ## Next production pass
 
-- [ ] Real artist-reviewed directional walk cycle and versioned visual golden files.
+- [ ] Real artist-reviewed directional walk cycle and versioned visual golden files (follow-up issue #4; removed from the 0.2.0 publication gate by Alexei on 2026-10-11).
 - [x] Tool profiles, cast tools, typed contracts and a cast atlas export (0.2.0).
 - [x] Crash-safe saves, strict frame numbers and bounded drawing, canvas and text sizes (0.2.0).
 - [ ] GUI/direct-call coordination for the remaining inherited tools.
@@ -32,6 +32,7 @@
 
 ## Publication gate
 
-- [ ] Select public repository identity and perform full source privacy review.
-- [ ] Confirm runtime distribution/licence posture independently of local execution.
-- [ ] Bundle workflow skills, release CI, registry metadata and publish only after review.
+- [x] Select public repository identity and perform full source privacy review. See [privacy review](docs/PRIVACY_REVIEW.md).
+- [x] Confirm runtime distribution/licence posture independently of local execution. See [privacy review](docs/PRIVACY_REVIEW.md) and [NOTICE](NOTICE).
+- [x] Review workflow guidance (none to bundle), add [release CI](.github/workflows/release.yml) and [registry metadata](server.json).
+- [ ] Publish only after Alexei reviews the release and supplies the PyPI publisher or token.
