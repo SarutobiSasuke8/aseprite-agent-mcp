@@ -5,3 +5,6 @@ UPSTREAM_INVENTORY.json records every imported source/test file and its original
 Local modifications and additions are described in CHANGELOG.md.
 No source from logiksecurity/ase-mcp has been incorporated.
 Aseprite itself is a separately installed runtime and is not distributed here.
+Users must supply their own licensed Aseprite installation, or build Aseprite
+themselves under its EULA. This package invokes that installation through
+ASEPRITE_PATH; it contains no Aseprite binary, installer, Lua runtime or art.

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.SarutobiSasuke8/aseprite-agent-mcp",
+  "title": "Aseprite Agent MCP",
+  "description": "Create and verify pixel-art assets with atomic Aseprite edits and Phaser export.",
+  "version": "0.2.0",
+  "websiteUrl": "https://pypi.org/project/aseprite-agent-mcp/",
+  "repository": {
+    "url": "https://github.com/SarutobiSasuke8/aseprite-agent-mcp",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "aseprite-agent-mcp",
+      "version": "0.2.0",
+      "runtimeHint": "uvx",
+      "transport": { "type": "stdio" },
+      "environmentVariables": [
+        { "name": "ASEPRITE_PATH", "description": "Path to your licensed Aseprite executable", "format": "string", "isRequired": true },
+        { "name": "ASEPRITE_MCP_WORKSPACE", "description": "Root directory for asset files", "format": "string", "isRequired": false },
+        { "name": "ASEPRITE_MCP_TOOLS", "description": "Tool profile, default core", "format": "string", "isRequired": false },
+        { "name": "ASEPRITE_MCP_LOCK_WAIT", "description": "Seconds to wait for a busy workspace", "format": "string", "isRequired": false }
+      ]
+    }
+  ]
+}
