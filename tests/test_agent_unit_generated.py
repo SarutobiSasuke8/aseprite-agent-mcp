@@ -105,3 +105,41 @@ def test_agent_unit_generated_default_tool_schema():
     tools = {tool.name: tool for tool in asyncio.run(mcp.list_tools())}
     assert {"import_generated_image", "assemble_animation"} <= tools.keys()
     assert tools["assemble_animation"].inputSchema["properties"]["alignment"]["enum"] == ["bounding-box", "anchor", "none"]
+    for name in ("assemble_animation", "import_generated_image"):
+        assert tools[name].inputSchema["properties"]["palette_first"]["type"] == "boolean"
+
+
+def test_agent_unit_generated_palette_first_majority_counts_shade_clusters():
+    image = Image.new("RGBA", (3, 3), (240, 30, 30, 255))
+    # Five close teals outvote four identical reds only after palette snapping.
+    for i in range(5):
+        image.putpixel((i % 3, i // 3), (10 + i, 160, 180, 255))
+    kwargs = {"method": "majority", "palette": ["#0aa0b4", "#f01e1e"]}
+    old, _, _ = g.clean_frames([image], 1, 1, **kwargs)
+    new, palette, _ = g.clean_frames([image], 1, 1, palette_first=True, **kwargs)
+    assert old[0].getpixel((0, 0)) == (240, 30, 30, 255)
+    assert new[0].getpixel((0, 0)) == (10, 160, 180, 255)
+    assert palette == ["#0aa0b4", "#f01e1e"]
+    assert g.clean_frames([image], 1, 1, palette_first=True, **kwargs)[0][0].tobytes() == new[0].tobytes()
+
+
+def test_agent_unit_generated_hires_palette_anchor_and_source_preservation():
+    images = [pose(256), pose(256, offset=2)]
+    before = [hashlib.sha256(im.tobytes()).hexdigest() for im in images]
+    frames, palette, _ = g.clean_frames(images, 128, 128, colours=48, palette_first=True,
+                                      method="majority", alignment="anchor", anchors=[[8, 12], [10, 12]])
+    assert len(palette) <= 48
+    assert all(frame.size == (128, 128) for frame in frames)
+    assert all(set(frame.getchannel("A").get_flattened_data()) <= {0, 255} for frame in frames)
+    assert frames[0].tobytes() == frames[1].tobytes()
+    assert [hashlib.sha256(im.tobytes()).hexdigest() for im in images] == before
+    with pytest.raises(ValueError, match="boolean"):
+        g.clean_frames(images, 128, 128, palette_first="yes")
+
+
+def test_agent_unit_generated_sparse_source_palette_sampling():
+    image = Image.new("RGBA", (512, 512))
+    image.putpixel((1, 1), (20, 160, 180, 255))
+    frames, palette = g.quantize_frames([image], 48, None, sample_limit=65_536)
+    assert palette == ["#14a0b4"]
+    assert frames[0].getpixel((1, 1)) == (20, 160, 180, 255)

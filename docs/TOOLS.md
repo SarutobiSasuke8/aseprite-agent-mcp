@@ -1614,6 +1614,8 @@ Clean 1..128 ordered PNG poses with one palette; save master, sheet and JSON.
     source [x,y] to (width//2,height-2), refusing clipping. No pose synthesis is
     implied: inspect the preview for identity, timing and motion coherence.
     Output is atomically published only after master and PNG pixel verification.
+    Use height=128 and colours=32..48 for detailed sprites. palette_first snaps
+    one shared source palette before sampling; defaults retain the prior pipeline.
 
 ```json
 {
@@ -1754,6 +1756,11 @@ Clean 1..128 ordered PNG poses with one palette; save master, sheet and JSON.
       ],
       "default": null,
       "title": "Outline"
+    },
+    "palette_first": {
+      "default": false,
+      "title": "Palette First",
+      "type": "boolean"
     }
   },
   "required": [
@@ -4536,6 +4543,8 @@ Clean one PNG into a binary-alpha pixel grid, palette and editable master.
     segmentation. outline adds a 1px eight-neighbour border, clipped at the cell
     edge, and may add one palette colour. N colours excludes transparency.
     New output directory only. Returns a nearest-neighbour preview for review.
+    width/height support 1..256px grids. palette_first snaps the source to one
+    shared palette before sampling, useful with majority on generated shading.
 
 ```json
 {
@@ -4620,6 +4629,11 @@ Clean one PNG into a binary-alpha pixel grid, palette and editable master.
       ],
       "default": null,
       "title": "Outline"
+    },
+    "palette_first": {
+      "default": false,
+      "title": "Palette First",
+      "type": "boolean"
     }
   },
   "required": [

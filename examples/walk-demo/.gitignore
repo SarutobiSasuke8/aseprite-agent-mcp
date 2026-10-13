@@ -1,0 +1,11 @@
+# Local intermediate result, before bounded source palette sampling was added.
+walk/
+walk-proof.json
+walk-preview.gif
+walk-comparison.png
+walk-contact.png
+# Repeat proofs use a fresh prefix without adding duplicate masters to Git.
+proof*/
+proof-*.png
+proof-*.gif
+proof-*.json

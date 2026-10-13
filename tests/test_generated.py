@@ -56,3 +56,26 @@ def test_generated_stdio_content_and_no_clobber(tmp_path):
                     again = await session.call_tool(name, inputs)
                     assert again.isError
     asyncio.run(proof())
+
+
+def test_generated_hires_palette_first_native_roundtrip(tmp_path, monkeypatch):
+    monkeypatch.setenv("ASEPRITE_MCP_WORKSPACE", str(tmp_path))
+    paths = []
+    for i in range(2):
+        image = Image.new("RGBA", (256, 256))
+        ImageDraw.Draw(image).rectangle((80 + i * 2, 32, 168 + i * 2, 230), fill=(20, 160, 180, 255))
+        ImageDraw.Draw(image).rectangle((110 + i * 2, 45, 138 + i * 2, 85), fill=(245, 170, 80, 255))
+        filename = f"hires-{i}.png"
+        image.save(tmp_path / filename)
+        paths.append(filename)
+    base = import_generated_image(paths[0], "hires-base", width=128, height=128, colours=48,
+                                  method="majority", palette_first=True)[0]
+    walk = assemble_animation(paths, "hires-walk", width=128, height=128, colours=48,
+                              alignment="anchor", anchors=[[124, 230], [126, 230]],
+                              method="majority", palette_first=True, tag="walk")[0]
+    assert base["verified"] and walk["verified"]
+    assert base["height"] == walk["height"] == 128 and len(walk["palette"]) <= 48
+    with Image.open(tmp_path / "hires-walk/frames/001.png") as first:
+        with Image.open(tmp_path / "hires-walk/frames/002.png") as second:
+            assert first.convert("RGBA").tobytes() == second.convert("RGBA").tobytes()
+    assert (tmp_path / "hires-walk/master.aseprite").is_file()
