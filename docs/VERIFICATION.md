@@ -1,5 +1,26 @@
 # Verification
 
+## Higher-resolution walk demo - 2026-10-13
+
+The final palette-first candidate passed all **324 tests** with
+`pytest --run-aseprite` on Windows and the local self-built Aseprite, with no skips.
+Ruff, the generated tool-reference check, wheel/sdist builds and distribution
+boundary checks passed. Existing defaults retain palette-after-sampling behaviour.
+
+Regressions cover palette-first majority votes across near-identical source
+shades, sparse source sampling, 128px grids, source preservation, binary alpha,
+shared palettes and explicit anchors. A native integration check verifies the
+128px import and animation masters after save/reopen.
+
+The original generated sheet in `examples/walk-demo/source.png` was preserved.
+The local demo has 8 frames, 116x128px cells, 48 opaque colours and foot row 126
+on every frame. A second local run with a fresh prefix produced the same decoded
+sheet hash: `4664640c4a38b8e9110b81f04c266464ee936f3e19dcb3919b5ff681bb406422`.
+The GIF has 8 frames at 100ms, looped; the contact and equal-size 64px/128px
+comparison were inspected. Remaining head/face/sleeve/satchel drift, especially
+frames 6 to 8, is recorded in the demo README. No artist or real-game proof,
+release, publication or deployment is claimed.
+
 ## Generated PNG pipeline - 2026-10-13
 
 Windows, Python 3.11 and a locally built Aseprite: `uv run python -m pytest

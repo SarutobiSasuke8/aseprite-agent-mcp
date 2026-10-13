@@ -112,14 +112,24 @@ def downsample(image, size, method):
     return result
 
 
-def quantize_frames(frames, colours, palette):
+def quantize_frames(frames, colours, palette, sample_limit=None):
     _integer(colours, 1, 256, "colours")
     if palette is not None:
         if not 1 <= len(palette) <= 256:
             raise ValueError("palette must contain 1..256 colours")
         rgb = list(dict.fromkeys(_rgb(c) for c in palette))
     else:
-        pixels = [p[:3] for frame in frames for p in frame.get_flattened_data() if p[3]]
+        stride = max(1, (sum(frame.width * frame.height for frame in frames) + sample_limit - 1) // sample_limit) \
+            if sample_limit else 1
+        pixels = [p[:3] for frame in frames for i, p in enumerate(frame.get_flattened_data())
+                  if p[3] and i % stride == 0]
+        # A thin opaque feature can fall between sample positions. Include one
+        # visible pixel per frame so a sparse sprite still has a palette.
+        if sample_limit:
+            for frame in frames:
+                first = next((p[:3] for p in frame.get_flattened_data() if p[3]), None)
+                if first is not None:
+                    pixels.append(first)
         if not pixels:
             raise ValueError("No opaque pixels to quantize")
         sample = Image.new("RGB", (len(pixels), 1))
@@ -149,7 +159,7 @@ def quantize_frames(frames, colours, palette):
 
 def clean_frames(images, width, height, method="nearest", colours=16, palette=None,
                  background=None, background_tolerance=0, alpha_threshold=128,
-                 outline=None, alignment="none", anchors=None):
+                 outline=None, alignment="none", anchors=None, palette_first=False):
     _integer(width, 1, 256, "width")
     _integer(height, 1, 256, "height")
     if not 1 <= len(images) <= 128 or width * height * len(images) > MAX_TOTAL_PIXELS:
@@ -158,7 +168,15 @@ def clean_frames(images, width, height, method="nearest", colours=16, palette=No
         raise ValueError("alignment must be none, bounding-box or anchor")
     if method not in {"nearest", "majority"}:
         raise ValueError("method must be nearest or majority")
+    if not isinstance(palette_first, bool):
+        raise ValueError("palette_first must be a boolean")
     prepared = [remove_background(im, background, background_tolerance, alpha_threshold) for im in images]
+    # Generated antialiasing can give every source pixel a different RGBA value.
+    # Snap the shared source palette first so majority votes count colour clusters
+    # instead of treating every near-identical shade as a separate candidate.
+    source_palette = palette
+    if palette_first:
+        prepared, source_palette = quantize_frames(prepared, colours, palette, sample_limit=65_536)
     transforms = []
     if alignment == "anchor":
         if not anchors or len(anchors) != len(images) or any(im.size != images[0].size for im in images):
@@ -207,7 +225,7 @@ def clean_frames(images, width, height, method="nearest", colours=16, palette=No
             transforms.append({"offset": list(offset), "source_size": list(images[index].size)})
     if any(frame.getchannel("A").getbbox() is None for frame in frames):
         raise ValueError("Downsampling leaves an empty frame")
-    frames, actual_palette = quantize_frames(frames, colours, palette)
+    frames, actual_palette = quantize_frames(frames, colours, source_palette)
     if outline:
         colour = _rgb(outline)
         for index, frame in enumerate(frames):
@@ -312,17 +330,19 @@ def import_generated_image(filename: str, output_directory: str, width: int = 32
                            method: Literal["nearest", "majority"] = "nearest", colours: int = 16,
                            palette: list[str] | None = None, background: str | None = None,
                            background_tolerance: int = 0, alpha_threshold: int = 128,
-                           outline: str | None = None) -> list:
+                           outline: str | None = None, palette_first: bool = False) -> list:
     """Clean one PNG into a binary-alpha pixel grid, palette and editable master.
 
     background is an explicit #RRGGBB border-connected colour key, not semantic
     segmentation. outline adds a 1px eight-neighbour border, clipped at the cell
     edge, and may add one palette colour. N colours excludes transparency.
     New output directory only. Returns a nearest-neighbour preview for review.
+    width/height support 1..256px grids. palette_first snaps the source to one
+    shared palette before sampling, useful with majority on generated shading.
     """
     frames, actual_palette, transforms = clean_frames(
         [load_png(filename)], width, height, method, colours, palette, background,
-        background_tolerance, alpha_threshold, outline)
+        background_tolerance, alpha_threshold, outline, palette_first=palette_first)
     return _write_bundle(frames, output_directory, "base", [100], actual_palette, transforms)
 
 
@@ -334,7 +354,7 @@ def assemble_animation(filenames: list[str], output_directory: str, width: int =
                        method: Literal["nearest", "majority"] = "nearest", colours: int = 16,
                        palette: list[str] | None = None, background: str | None = None,
                        background_tolerance: int = 0, alpha_threshold: int = 128,
-                       outline: str | None = None) -> list:
+                       outline: str | None = None, palette_first: bool = False) -> list:
     """Clean 1..128 ordered PNG poses with one palette; save master, sheet and JSON.
 
     Bounding-box mode uses one shared scale, bottom-centres silhouettes and leaves
@@ -342,11 +362,13 @@ def assemble_animation(filenames: list[str], output_directory: str, width: int =
     source [x,y] to (width//2,height-2), refusing clipping. No pose synthesis is
     implied: inspect the preview for identity, timing and motion coherence.
     Output is atomically published only after master and PNG pixel verification.
+    Use height=128 and colours=32..48 for detailed sprites. palette_first snaps
+    one shared source palette before sampling; defaults retain the prior pipeline.
     """
     if not 1 <= len(filenames) <= 128:
         raise ValueError("filenames must contain 1..128 PNGs")
     frames, actual_palette, transforms = clean_frames(
         load_poses(filenames), width, height, method, colours,
-        palette, background, background_tolerance, alpha_threshold, outline, alignment, anchors)
+        palette, background, background_tolerance, alpha_threshold, outline, alignment, anchors, palette_first)
     durations = durations_ms if durations_ms is not None else [duration_ms] * len(frames)
     return _write_bundle(frames, output_directory, tag, durations, actual_palette, transforms)

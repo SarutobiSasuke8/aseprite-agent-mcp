@@ -135,6 +135,11 @@ assemble_animation(filenames=["idle-1.png", "idle-2.png", "idle-3.png", "idle-4.
 
 - `method="nearest"` samples a grid; `"majority"` chooses the most frequent RGBA
   value in each source cell, with deterministic ties. Majority only downsamples.
+- `width` and `height` accept grids up to 256px per edge. For detailed sprites,
+  use `height=128`, `colours=32` to `48`, `method="majority"` and
+  `palette_first=True`. Palette-first mode snaps one shared source palette before
+  voting, so near-identical generated shades count together. It is opt-in;
+  existing calls keep their previous behaviour.
 - `palette=["#RRGGBB", ...]` snaps to explicit colours. Otherwise `colours` builds
   one shared automatic palette across the animation. Alpha is binary after
   `alpha_threshold` (default 128). Transparency is excluded from the colour count;
@@ -158,6 +163,10 @@ The [generated courier demo](examples/generated-demo/README.md) includes the
 original model output, a cleaned base, a 4-frame idle, editable masters and a
 reproducible local script. Pixel verification proves file integrity. It does not
 approve art quality or make a coherent animation out of inconsistent key poses.
+
+The [walk demo](examples/walk-demo/README.md) uses an 8-pose generation pass,
+128px-high cells, a shared 48-colour palette and explicit feet anchors. It includes
+a looping GIF and a 64px/128px comparison from the same source and palette.
 
 1. `health_check` proves the local CLI and Lua path can create and export.
 2. `create_sprite` creates an editable `.aseprite` master.

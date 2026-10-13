@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Opt-in `palette_first` on generated-image import and animation assembly:
+  shared source-palette snapping before downsampling. Detailed 128px walk demo
+  with 48 colours, feet anchors and a 64px/128px comparison.
 - `import_generated_image` and `assemble_animation`: bounded PNG cleanup, shared
   palettes, binary alpha, border colour keys, optional outlines, bounding-box or
   explicit anchor alignment, editable masters and verified sheet/JSON bundles.
