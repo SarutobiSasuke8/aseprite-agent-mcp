@@ -28,6 +28,7 @@ DISABLED = frozenset({
 
 # The default surface: enough to build, animate, check and ship a character sheet.
 CORE = frozenset({
+    "import_generated_image", "assemble_animation",
     # discovery and inspection
     "health_check", "list_sprites", "get_sprite_info", "get_pixels", "render_preview",
     # documents

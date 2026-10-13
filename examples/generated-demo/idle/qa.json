@@ -1,0 +1,34 @@
+{
+  "verified": true,
+  "frames": 4,
+  "width": 32,
+  "height": 48,
+  "palette": [
+    "#f5c59c",
+    "#a89f7d",
+    "#6d7b69",
+    "#337274",
+    "#a95728",
+    "#485c59",
+    "#245e65",
+    "#184750",
+    "#5e3527",
+    "#43302d",
+    "#362928",
+    "#2a1c1c",
+    "#10343d",
+    "#0d2730",
+    "#131a20",
+    "#130e10",
+    "#152b32"
+  ],
+  "sheet_rgba_sha256": "de83258fb158b937270828789307396ef652ddc6a1197c43b4d53d531231144e",
+  "files": [
+    "master.aseprite",
+    "sheet.png",
+    "sheet.json",
+    "frames/",
+    "verify/"
+  ],
+  "visual_review_required": true
+}

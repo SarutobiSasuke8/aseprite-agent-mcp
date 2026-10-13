@@ -17,11 +17,11 @@ See [NOTICE](NOTICE),
 [LICENSE](LICENSE) and [UPSTREAM_INVENTORY.json](UPSTREAM_INVENTORY.json).
 The inherited Python namespace remains `aseprite_mcp`; the package and command are `aseprite-agent-mcp`.
 
-112 tools cover native documents, pixel drawing, layers, cels, frames, palettes,
+114 tools cover native documents, pixel drawing, layers, cels, frames, palettes,
 tags, slices, transforms, tilemaps, inspection and exports. The production path
 adds atomic edits with image feedback, strict typed asset contracts, labelled
 all-frame previews, character-cast tools and Phaser bundles verified against
-reopened native masters. By default the server exposes a 40-tool `core` profile
+reopened native masters. By default the server exposes a 42-tool `core` profile
 (see [Tool profiles](#tool-profiles)). See the generated
 [tool reference](docs/TOOLS.md) for exact schemas.
 
@@ -98,8 +98,8 @@ profile chosen by `ASEPRITE_MCP_TOOLS`, a comma-separated list of names:
 
 | Value | Exposes |
 | --- | --- |
-| `core` (default) | 40 tools: create, draw, animate, preview, validate, export and the cast tools |
-| `all` | Every supported tool (112) |
+| `core` (default) | 42 tools: generate/import, create, draw, animate, preview, validate, export and the cast tools |
+| `all` | Every supported tool (114) |
 | a group | One tool module, e.g. `tilemap`, `effects`, `slices`, `palette`, `workflow` |
 | a tool name | One extra tool, e.g. `core,add_outline` |
 
@@ -117,6 +117,47 @@ Unknown names stop the server at startup. The groups are listed at the top of th
 | `ASEPRITE_AGENT_ALLOWED_ROOTS` | `[]` | JSON list of extra roots |
 
 ## Recommended workflow
+
+### Generated art to editable animation
+
+Let an image model draw the character and key poses, then use `import_generated_image`
+to turn one PNG into a pixel grid and `assemble_animation` to clean and align an
+ordered pose list. Both tools are in the default `core` profile.
+
+```python
+import_generated_image(filename="base.png", output_directory="base-clean",
+                       width=32, height=32, colours=16)
+assemble_animation(filenames=["idle-1.png", "idle-2.png", "idle-3.png", "idle-4.png"],
+                   output_directory="idle-clean", width=32, height=48, tag="idle",
+                   colours=16, alignment="bounding-box",
+                   durations_ms=[180, 140, 180, 140], outline="#152b32")
+```
+
+- `method="nearest"` samples a grid; `"majority"` chooses the most frequent RGBA
+  value in each source cell, with deterministic ties. Majority only downsamples.
+- `palette=["#RRGGBB", ...]` snaps to explicit colours. Otherwise `colours` builds
+  one shared automatic palette across the animation. Alpha is binary after
+  `alpha_threshold` (default 128). Transparency is excluded from the colour count;
+  an optional 1px outline can add one colour and is clipped at the cell boundary.
+- `background="#RRGGBB"` removes only border-connected matching pixels, with an
+  optional `background_tolerance`. It preserves enclosed details and is a colour
+  key, not semantic segmentation. Existing transparency needs no background key.
+- Bounding-box alignment uses one scale for all poses and bottom-centres each
+  silhouette. `alignment="anchor"` accepts one source `[x,y]` per same-size input
+  and places it at `(width//2,height-2)`, rejecting clipping. `"none"` keeps each
+  canvas. Keep pose scale and padding consistent and inspect the returned preview.
+
+Each new output directory contains `master.aseprite`, cleaned frame PNGs,
+`sheet.png`, `sheet.json` and `qa.json`. The native master is reopened through
+[Aseprite's Lua API](https://www.aseprite.org/api/sprite); every rendered frame,
+the tag range, durations and sheet pixels are checked before an atomic,
+no-overwrite directory publication. Source PNGs are preserved. Inputs are bounded
+to 4 million pixels each, 16 million total, 128 frames and 1 million output pixels.
+
+The [generated courier demo](examples/generated-demo/README.md) includes the
+original model output, a cleaned base, a 4-frame idle, editable masters and a
+reproducible local script. Pixel verification proves file integrity. It does not
+approve art quality or make a coherent animation out of inconsistent key poses.
 
 1. `health_check` proves the local CLI and Lua path can create and export.
 2. `create_sprite` creates an editable `.aseprite` master.
