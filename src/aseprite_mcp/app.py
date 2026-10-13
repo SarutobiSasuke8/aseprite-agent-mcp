@@ -35,6 +35,9 @@ Workflow notes:
   * Prefer ase_apply_and_preview for atomic edits with image feedback, then
     ase_validate_asset_contract and ase_export_phaser for verified production bundles.
   * Recommended first step for a new asset: `create_sprite`, then draw, then preview.
+  * For model-generated PNG poses, use `import_generated_image` or
+    `assemble_animation`: palette cleanup, binary alpha, alignment and verified
+    native master/sheet bundles. Review the preview for artistic consistency.
 
 Building a cast of characters:
   1. Draw one base character. `draw_pixel_rows` paints a whole frame from text rows.

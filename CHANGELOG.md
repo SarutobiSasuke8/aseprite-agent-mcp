@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- `import_generated_image` and `assemble_animation`: bounded PNG cleanup, shared
+  palettes, binary alpha, border colour keys, optional outlines, bounding-box or
+  explicit anchor alignment, editable masters and verified sheet/JSON bundles.
+  Both are included in the default core profile (42 tools; 114 supported tools).
+- Original image-model courier demo with before/after previews, 4-frame idle and
+  native masters. Artist review and real-game proof remain separate.
+
 ## 0.2.0 - 2026-10-11
 
 Improvement sweep. Highlights first; every item has a regression test.

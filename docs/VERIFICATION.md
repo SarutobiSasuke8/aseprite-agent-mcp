@@ -1,5 +1,30 @@
 # Verification
 
+## Generated PNG pipeline - 2026-10-13
+
+Windows, Python 3.11 and a locally built Aseprite: `uv run python -m pytest
+--run-aseprite` passed all 319 tests with no skips. Ruff and the generated tool
+reference check passed. Both archives passed `check_distribution.py`.
+
+The new tests cover shared palettes, binary alpha, deterministic majority ties,
+border-connected background removal, enclosed details, outlines, explicit
+anchors, clipping refusal, path confinement, source integrity, bounds,
+no-clobber output and engine failure before publication. A real editor test
+reopens the generated master and verifies every frame, tag range and timing.
+A subsequent real stdio MCP regression verifies both new tools return JSON and
+image content and refuse repeated output directories. The 2 generated-pipeline
+integration tests pass together after that addition.
+
+`scripts/generated_sprite_demo.py` completed from the original image-model pose
+sheet, producing a cleaned base and a 4-frame idle. The committed base and idle
+masters, exported PNGs, JSON and reopened-master renders are in
+`examples/generated-demo/`. A second run with the `proof` prefix completed and
+verified the same sheet RGBA hash. Those repeat-run outputs are local evidence,
+not a second committed demo. The source and 6x frame preview were inspected.
+The third pose changes the face/silhouette slightly: this remains an art-review
+limitation, not a production animation claim. No release, public upload or
+real-game integration was performed.
+
 ## Readiness sweep - 2026-10-01
 
 The candidate remains a private, unreleased alpha. On Windows, all **270 tests
