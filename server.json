@@ -3,7 +3,7 @@
   "name": "io.github.SarutobiSasuke8/aseprite-agent-mcp",
   "title": "Aseprite Agent MCP",
   "description": "Create and verify pixel-art assets with atomic Aseprite edits and Phaser export.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "websiteUrl": "https://pypi.org/project/aseprite-agent-mcp/",
   "repository": {
     "url": "https://github.com/SarutobiSasuke8/aseprite-agent-mcp",
@@ -13,7 +13,7 @@
     {
       "registryType": "pypi",
       "identifier": "aseprite-agent-mcp",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "runtimeHint": "uvx",
       "transport": { "type": "stdio" },
       "environmentVariables": [
