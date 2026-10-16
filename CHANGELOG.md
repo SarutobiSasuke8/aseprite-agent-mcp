@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.0 - 2026-10-16
 
 - Opt-in `palette_first` on generated-image import and animation assembly:
   shared source-palette snapping before downsampling. Detailed 128px walk demo
